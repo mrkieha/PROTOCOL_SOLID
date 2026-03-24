@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-main.py — точка входа tg-proxy.
-Запускает веб-GUI и следит за корректным завершением при Ctrl+C / SIGTERM.
-"""
-
 import sys
 import os
 import signal
