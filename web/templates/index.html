@@ -10,24 +10,15 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <style>
   :root {
-    --bg:       #0d1117;
-    --surface:  #161b22;
-    --surface2: #1c2333;
-    --border:   #30363d;
-    --text:     #e6edf3;
-    --muted:    #7d8590;
-    --accent:   #2f81f7;
-    --green:    #3fb950;
-    --red:      #f85149;
-    --yellow:   #d29922;
-    --orange:   #db6d28;
-    --mono:     'JetBrains Mono', monospace;
-    --sans:     'Onest', sans-serif;
+    --bg:      #0d1117; --surface: #161b22; --surface2: #1c2333;
+    --border:  #30363d; --text:    #e6edf3; --muted:    #7d8590;
+    --accent:  #2f81f7; --green:   #3fb950; --red:      #f85149;
+    --yellow:  #d29922; --mono:    'JetBrains Mono', monospace;
+    --sans:    'Onest', sans-serif;
   }
   *, *::before, *::after { box-sizing: border-box; }
   body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; }
 
-  /* Topbar */
   .topbar {
     background: var(--surface); border-bottom: 1px solid var(--border);
     padding: 9px 18px; display: flex; align-items: center; gap: 10px;
@@ -38,12 +29,10 @@
   .topbar-sys { margin-left: auto; display: flex; gap: 16px; font-size: 11px; color: var(--muted); font-family: var(--mono); }
   .topbar-sys b { color: var(--text); }
 
-  /* Layout */
   .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
   @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
   .col { display: flex; flex-direction: column; gap: 12px; }
 
-  /* Cards */
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
   .card-hd {
     background: var(--surface2); border-bottom: 1px solid var(--border);
@@ -53,28 +42,25 @@
   }
   .card-bd { padding: 14px; }
 
-  /* Tabs inside card */
   .c-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); padding: 0 14px; background: var(--surface2); }
   .c-tab {
     padding: 8px 14px; font-size: 12px; font-weight: 500; color: var(--muted);
     cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
     transition: color .15s, border-color .15s; white-space: nowrap;
   }
-  .c-tab:hover  { color: var(--text); }
+  .c-tab:hover { color: var(--text); }
   .c-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
   .c-pane { display: none; padding: 14px; }
   .c-pane.active { display: block; }
 
-  /* Indicator */
   .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
-  .dot.on  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .dot.on { background: var(--green); box-shadow: 0 0 6px var(--green); }
 
-  /* Badge */
   .bs { font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 4px; }
   .bs.on  { background: rgba(63,185,80,.13); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
   .bs.off { background: rgba(248,81,73,.10); color: var(--red);   border: 1px solid rgba(248,81,73,.25); }
+  .bs.warn { background: rgba(210,153,34,.13); color: var(--yellow); border: 1px solid rgba(210,153,34,.3); }
 
-  /* Inputs */
   .form-control, .form-select, textarea.form-control {
     background: var(--bg); border: 1px solid var(--border);
     color: var(--text); font-size: 13px; font-family: var(--mono); border-radius: 6px;
@@ -85,80 +71,81 @@
   }
   .form-label { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
 
-  /* Buttons */
   .btn { font-size: 13px; border-radius: 6px; padding: 5px 14px; font-family: var(--sans); }
   .btn-sm { padding: 3px 10px; font-size: 12px; }
-  .btn-primary   { background: var(--accent); border-color: var(--accent); }
+  .btn-primary   { background: var(--accent);  border-color: var(--accent); }
   .btn-primary:hover { background: #388bfd; border-color: #388bfd; }
   .btn-danger    { background: #6e1d1a; border-color: #6e1d1a; color: #fff; }
-  .btn-danger:hover { background: var(--red); border-color: var(--red); }
-  .btn-outline-secondary { border-color: var(--border); color: var(--muted); }
-  .btn-outline-secondary:hover { border-color: #58a6ff; color: #58a6ff; }
+  .btn-danger:hover  { background: var(--red); border-color: var(--red); }
   .btn-success   { background: #196c2e; border-color: #196c2e; }
   .btn-success:hover { background: var(--green); border-color: var(--green); }
+  .btn-outline-secondary { border-color: var(--border); color: var(--muted); }
+  .btn-outline-secondary:hover { border-color: #58a6ff; color: #58a6ff; }
+  .btn-outline-warning { border-color: var(--yellow); color: var(--yellow); }
+  .btn-outline-warning:hover { background: rgba(210,153,34,.1); }
 
-  /* 2-col row */
-  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .row2-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
+  .row2   { display: grid; grid-template-columns: 1fr 1fr;  gap: 10px; }
+  .row2-3 { display: grid; grid-template-columns: 2fr 1fr;  gap: 10px; }
 
-  /* Link box */
   .link-box {
     background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
-    padding: 9px 12px; font-family: var(--mono); font-size: 12px; color: #58a6ff;
+    padding: 9px 12px; font-family: var(--mono); font-size: 11.5px; color: #58a6ff;
     word-break: break-all; min-height: 36px;
   }
 
-  /* QR */
   .qr-wrap { display: flex; justify-content: center; padding: 8px 0; }
   .qr-wrap img { border-radius: 8px; border: 1px solid var(--border); max-width: 168px; }
   .qr-ph { color: var(--muted); font-size: 12px; text-align: center; padding: 16px 0; }
 
-  /* Log */
   .log-box {
     background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
     font-family: var(--mono); font-size: 11.5px; color: var(--muted);
-    height: 190px; overflow-y: auto; padding: 9px 12px;
+    height: 180px; overflow-y: auto; padding: 9px 12px;
     line-height: 1.65; white-space: pre-wrap; word-break: break-all;
   }
   .log-box::-webkit-scrollbar { width: 4px; }
   .log-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* Traffic */
   .traffic { display: flex; gap: 18px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
   .traffic b { color: var(--text); }
 
-  /* Alerts */
-  .a-warn  { background: rgba(210,153,34,.1); border: 1px solid rgba(210,153,34,.3); border-radius:6px; padding: 8px 12px; font-size:12px; color: var(--yellow); }
-  .a-ok    { background: rgba(63,185,80,.1);  border: 1px solid rgba(63,185,80,.3);  border-radius:6px; padding: 8px 12px; font-size:12px; color: var(--green); }
-  .a-info  { background: rgba(47,129,247,.1); border: 1px solid rgba(47,129,247,.3); border-radius:6px; padding: 8px 12px; font-size:12px; color: #58a6ff; }
+  .a-warn { background: rgba(210,153,34,.1); border: 1px solid rgba(210,153,34,.3); border-radius:6px; padding: 8px 12px; font-size:12px; color: var(--yellow); }
+  .a-ok   { background: rgba(63,185,80,.1);  border: 1px solid rgba(63,185,80,.3);  border-radius:6px; padding: 8px 12px; font-size:12px; color: var(--green); }
+  .a-info { background: rgba(47,129,247,.1); border: 1px solid rgba(47,129,247,.3); border-radius:6px; padding: 8px 12px; font-size:12px; color: #58a6ff; }
+  .a-err  { background: rgba(248,81,73,.1);  border: 1px solid rgba(248,81,73,.3);  border-radius:6px; padding: 8px 12px; font-size:12px; color: var(--red); }
 
-  /* Junk params */
   .junk-box {
     background: var(--bg); border: 1px solid var(--border); border-radius:6px;
-    padding: 9px 12px; font-family: var(--mono); font-size: 11px; color: var(--muted);
-    line-height: 1.8;
+    padding: 9px 12px; font-family: var(--mono); font-size: 11px; color: var(--muted); line-height: 1.8;
   }
 
-  /* Duck DNS hostname */
-  .duck-host { font-family: var(--mono); font-size: 13px; color: var(--green); font-weight: 600; }
+  /* ── Диагностика ── */
+  .diag-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+  }
+  .diag-row:last-child { border-bottom: none; }
+  .diag-icon { font-size: 16px; width: 22px; text-align: center; flex-shrink: 0; }
+  .diag-label { flex: 1; }
+  .diag-val { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; }
+  .diag-spin { display: inline-block; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Toast */
-  .toast-container { z-index: 9999; }
-  .toast { font-size: 13px; min-width: 220px; }
+  .issue-list { list-style: none; padding: 0; margin: 0; }
+  .issue-list li { padding: 5px 0; font-size: 12px; color: var(--red); }
+  .issue-list li::before { content: "✗ "; }
 
-  hr { border-color: var(--border); opacity: 1; margin: 12px 0; }
-
-  /* Sys info */
   .sys-row { font-family: var(--mono); font-size: 12px; color: var(--muted); line-height: 2.1; }
   .sys-row b { color: var(--text); }
 
-  /* Warn badge on port input */
+  .toast-container { z-index: 9999; }
+  .toast { font-size: 13px; min-width: 220px; }
+  hr { border-color: var(--border); opacity: 1; margin: 12px 0; }
   .port-warn { font-size: 10px; color: var(--yellow); margin-left: 4px; }
 </style>
 </head>
 <body>
 
-<!-- Topbar -->
 <div class="topbar">
   <i class="bi bi-shield-lock-fill" style="color:var(--accent);font-size:17px"></i>
   <span class="topbar-logo">tg<em>-</em>proxy</span>
@@ -169,7 +156,6 @@
   </div>
 </div>
 
-<!-- Toast -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   <div id="toast" class="toast align-items-center border-0" role="alert">
     <div class="d-flex">
@@ -181,7 +167,7 @@
 
 <div class="layout">
 
-  <!-- ═══════ ЛЕВАЯ ═══════ -->
+  <!-- ═══ ЛЕВАЯ ═══ -->
   <div class="col">
 
     <!-- Туннель -->
@@ -193,18 +179,11 @@
           <span id="awg-dot" class="dot"></span>
         </span>
       </div>
-
-      <!-- Вкладки -->
       <div class="c-tabs">
-        <div class="c-tab active" onclick="switchTab('manual')">
-          <i class="bi bi-pencil-square me-1"></i>Вручную
-        </div>
-        <div class="c-tab" onclick="switchTab('warp')">
-          <i class="bi bi-cloud-arrow-down me-1"></i>WARP / WG конфиг
-        </div>
+        <div class="c-tab active" onclick="switchTab('manual')"><i class="bi bi-pencil-square me-1"></i>Вручную</div>
+        <div class="c-tab" onclick="switchTab('warp')"><i class="bi bi-cloud-arrow-down me-1"></i>WARP / WG конфиг</div>
       </div>
 
-      <!-- Ручной ввод -->
       <div id="pane-manual" class="c-pane active">
         <div class="row2 mb-3">
           <div>
@@ -212,9 +191,7 @@
             <input id="awg-ip" class="form-control" placeholder="1.2.3.4">
           </div>
           <div>
-            <label class="form-label">
-              Порт <span id="port-warn" class="port-warn"></span>
-            </label>
+            <label class="form-label">Порт <span id="port-warn" class="port-warn"></span></label>
             <input id="awg-port" type="number" class="form-control" placeholder="51820" value="51820">
           </div>
         </div>
@@ -223,39 +200,38 @@
           <input id="awg-pubkey" class="form-control" placeholder="base64==">
         </div>
         <div class="mb-3">
-          <label class="form-label">Preshared Key <span style="color:var(--muted);font-size:10px">(опционально, оставь пустым)</span></label>
-          <input id="awg-psk" class="form-control" placeholder="— не обязательно —">
+          <label class="form-label">
+            Preshared Key
+            <span style="color:var(--muted);font-size:10px">— опционально, оставь пустым если не нужен</span>
+          </label>
+          <input id="awg-psk" class="form-control" placeholder="(не обязательно)">
         </div>
         <button class="btn btn-primary w-100" onclick="applyManual()">
           <i class="bi bi-sliders me-1"></i>Сгенерировать конфиг
         </button>
       </div>
 
-      <!-- WARP / WG импорт -->
       <div id="pane-warp" class="c-pane">
         <div class="a-info mb-3">
           <i class="bi bi-info-circle me-1"></i>
-          Вставь сюда <b>полный текст</b> конфига — Cloudflare WARP, обычного WireGuard или AmneziaWG.
-          Ключи и параметры возьмутся автоматически.
+          Вставь полный текст конфига — Cloudflare WARP, WireGuard или AmneziaWG.
+          Ключи и Endpoint возьмутся автоматически.
         </div>
         <div class="mb-3">
           <label class="form-label">Текст конфига (.conf)</label>
           <textarea id="warp-text" class="form-control" rows="9"
-            placeholder="[Interface]&#10;PrivateKey = ...&#10;Address = 172.16.0.2/32&#10;&#10;[Peer]&#10;PublicKey = ...&#10;Endpoint = engage.cloudflareclient.com:2408&#10;AllowedIPs = 0.0.0.0/0"></textarea>
+            placeholder="[Interface]&#10;PrivateKey = ...&#10;Address = 172.16.0.2/32&#10;DNS = 1.1.1.1&#10;&#10;[Peer]&#10;PublicKey = ...&#10;Endpoint = engage.cloudflareclient.com:2408&#10;AllowedIPs = 0.0.0.0/0"></textarea>
         </div>
         <button class="btn btn-primary w-100" onclick="importWarp()">
           <i class="bi bi-cloud-arrow-down me-1"></i>Импортировать и применить
         </button>
       </div>
 
-      <!-- Результат генерации (общий для обоих табов) -->
       <div id="awg-result" style="display:none;padding:0 14px 14px">
         <div id="awg-result-content"></div>
       </div>
 
       <hr style="margin:0">
-
-      <!-- Управление туннелем -->
       <div style="padding:14px">
         <div class="d-flex gap-2 mb-3">
           <button class="btn btn-success flex-fill" onclick="tunnelStart()">
@@ -282,8 +258,7 @@
       <div class="card-bd">
         <div class="a-info mb-3" style="font-size:11.5px">
           Бесплатный динамический DNS — не нужно открывать порт 443.
-          Зарегистрируй субдомен на <a href="https://www.duckdns.org" target="_blank" style="color:#58a6ff">duckdns.org</a>
-          и вставь токен + имя субдомена.
+          Зарегистрируй субдомен на <a href="https://www.duckdns.org" target="_blank" style="color:#58a6ff">duckdns.org</a>.
         </div>
         <div class="row2-3 mb-3">
           <div>
@@ -291,9 +266,8 @@
             <input id="duck-domain" class="form-control" placeholder="myproxy">
           </div>
           <div>
-            <!-- пусто, выравнивание -->
             <label class="form-label" style="visibility:hidden">.</label>
-            <div style="font-size:11px;color:var(--muted);padding-top:6px">.duckdns.org</div>
+            <div style="font-size:11px;color:var(--muted);padding-top:7px">.duckdns.org</div>
           </div>
         </div>
         <div class="mb-3">
@@ -317,17 +291,15 @@
       <div class="card-hd"><i class="bi bi-cpu"></i> Система</div>
       <div class="card-bd sys-row">
         <div>ОС: <b id="sys-os">—</b></div>
-        <div>CPU: <b id="sys-cpu">—</b>%</div>
-        <div>RAM: <b id="sys-ru">—</b> / <span id="sys-rt">—</span></div>
+        <div>CPU: <b id="sys-cpu">—</b>%  &nbsp; RAM: <b id="sys-ru">—</b> / <span id="sys-rt">—</span></div>
         <div>Аптайм: <b id="sys-up">—</b></div>
       </div>
     </div>
 
-  </div>
-  <!-- ═══════ КОНЕЦ ЛЕВОЙ ═══════ -->
+  </div><!-- /col left -->
 
 
-  <!-- ═══════ ПРАВАЯ ═══════ -->
+  <!-- ═══ ПРАВАЯ ═══ -->
   <div class="col">
 
     <!-- MTProto прокси -->
@@ -340,7 +312,6 @@
         </span>
       </div>
       <div class="card-bd">
-
         <div class="row2 mb-3">
           <div>
             <label class="form-label">TLS-домен маскировки</label>
@@ -372,9 +343,7 @@
         <label class="form-label">Ссылка для Telegram</label>
         <div class="d-flex gap-2 mb-1">
           <div id="proxy-link" class="link-box flex-fill">не запущен</div>
-          <button class="btn btn-outline-secondary btn-sm" onclick="copyLink()" title="Скопировать">
-            <i class="bi bi-clipboard"></i>
-          </button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="copyLink()"><i class="bi bi-clipboard"></i></button>
         </div>
         <div id="proxy-meta" class="mb-2" style="font-size:11px;color:var(--muted)"></div>
 
@@ -385,6 +354,57 @@
             QR появится после запуска
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Диагностика -->
+    <div class="card">
+      <div class="card-hd">
+        <i class="bi bi-stethoscope"></i> Диагностика
+        <button class="btn btn-outline-warning btn-sm ms-auto" onclick="runDiag()" id="diag-btn">
+          <i class="bi bi-play-fill me-1"></i>Проверить всё
+        </button>
+      </div>
+      <div class="card-bd" style="padding:10px 14px">
+
+        <div id="diag-rows">
+          <!-- Статические строки — обновляются из статуса -->
+          <div class="diag-row">
+            <span class="diag-icon"><i class="bi bi-diagram-3" id="di-awg-icon" style="color:var(--muted)"></i></span>
+            <span class="diag-label">AWG туннель</span>
+            <span class="diag-val" id="di-awg-val">—</span>
+          </div>
+          <div class="diag-row">
+            <span class="diag-icon"><i class="bi bi-send" id="di-proxy-icon" style="color:var(--muted)"></i></span>
+            <span class="diag-label">MTProto прокси</span>
+            <span class="diag-val" id="di-proxy-val">—</span>
+          </div>
+          <div class="diag-row">
+            <span class="diag-icon"><i class="bi bi-globe2" id="di-duck-icon" style="color:var(--muted)"></i></span>
+            <span class="diag-label">Duck DNS</span>
+            <span class="diag-val" id="di-duck-val">—</span>
+          </div>
+          <div class="diag-row">
+            <span class="diag-icon"><i class="bi bi-wifi" id="di-tg-icon" style="color:var(--muted)"></i></span>
+            <span class="diag-label">Telegram серверы через туннель</span>
+            <span class="diag-val" id="di-tg-val">нажми «Проверить»</span>
+          </div>
+          <div class="diag-row">
+            <span class="diag-icon"><i class="bi bi-door-open" id="di-port-icon" style="color:var(--muted)"></i></span>
+            <span class="diag-label">Порт <span id="di-port-num">8443</span> снаружи</span>
+            <span class="diag-val" id="di-port-val">нажми «Проверить»</span>
+          </div>
+        </div>
+
+        <div id="diag-issues" class="mt-2" style="display:none">
+          <div class="a-err" style="padding:10px 12px">
+            <div style="font-weight:600;margin-bottom:4px"><i class="bi bi-exclamation-triangle me-1"></i>Проблемы:</div>
+            <ul id="diag-issue-list" class="issue-list"></ul>
+          </div>
+        </div>
+        <div id="diag-ok" class="a-ok mt-2" style="display:none">
+          <i class="bi bi-check-circle me-1"></i>Всё работает корректно
+        </div>
 
       </div>
     </div>
@@ -393,23 +413,19 @@
     <div class="card">
       <div class="card-hd">
         <i class="bi bi-terminal"></i> Лог прокси
-        <button class="btn btn-outline-secondary btn-sm ms-auto" onclick="$('log-box').textContent=''">очистить вид</button>
+        <button class="btn btn-outline-secondary btn-sm ms-auto" onclick="$('log-box').textContent=''">очистить</button>
       </div>
       <div style="padding:10px">
         <div id="log-box" class="log-box">ждём запуска...</div>
       </div>
     </div>
 
-  </div>
-  <!-- ═══════ КОНЕЦ ПРАВОЙ ═══════ -->
+  </div><!-- /col right -->
 
 </div><!-- /layout -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// =============================================================================
-// Утилиты
-// =============================================================================
 const $ = id => document.getElementById(id);
 
 function toast(msg, ok = true) {
@@ -426,20 +442,16 @@ async function api(path, method = 'GET', body = null) {
   return r.json();
 }
 
-// =============================================================================
-// Вкладки туннеля
-// =============================================================================
+// ── Вкладки туннеля ──────────────────────────────────────────────────────────
 function switchTab(name) {
   document.querySelectorAll('.c-tab').forEach((t, i) => {
-    t.classList.toggle('active', (i === 0 && name === 'manual') || (i === 1 && name === 'warp'));
+    t.classList.toggle('active', (i===0&&name==='manual')||(i===1&&name==='warp'));
   });
   $('pane-manual').classList.toggle('active', name === 'manual');
-  $('pane-warp').classList.toggle('active', name === 'warp');
+  $('pane-warp').classList.toggle('active',   name === 'warp');
 }
 
-// =============================================================================
-// AWG — ручной конфиг
-// =============================================================================
+// ── AWG конфиг ───────────────────────────────────────────────────────────────
 $('awg-port').addEventListener('input', function() {
   $('port-warn').textContent = +this.value === 51820 ? '⚠ блокируется в РФ' : '';
 });
@@ -449,61 +461,41 @@ async function applyManual() {
   const pubkey = $('awg-pubkey').value.trim();
   const psk    = $('awg-psk').value.trim() || null;
   const port   = parseInt($('awg-port').value) || 51820;
-
   if (!ip || !pubkey) { toast('Заполни IP и Public Key', false); return; }
-
-  const r = await api('/api/tunnel/config', 'POST', {
-    server_ip: ip, server_port: port, server_pubkey: pubkey, preshared_key: psk
-  });
+  const r = await api('/api/tunnel/config', 'POST',
+    { server_ip: ip, server_port: port, server_pubkey: pubkey, preshared_key: psk });
   showAwgResult(r);
 }
 
-// =============================================================================
-// AWG — импорт WARP/WG
-// =============================================================================
 async function importWarp() {
   const text = $('warp-text').value.trim();
   if (!text) { toast('Вставь текст конфига', false); return; }
-
   const r = await api('/api/tunnel/import-warp', 'POST', { config: text });
   showAwgResult(r);
-  if (r.ok) toast('Конфиг WARP импортирован и применён');
+  if (r.ok) toast('Конфиг импортирован и применён');
 }
 
 function showAwgResult(r) {
-  const wrap = $('awg-result');
-  const cont = $('awg-result-content');
-
+  const wrap = $('awg-result'), cont = $('awg-result-content');
   if (!r.ok) {
-    cont.innerHTML = `<div class="a-warn"><i class="bi bi-exclamation-triangle me-1"></i>${r.error || 'Ошибка'}</div>`;
+    cont.innerHTML = `<div class="a-err"><i class="bi bi-x-circle me-1"></i>${r.error||'Ошибка'}</div>`;
     wrap.style.display = 'block';
-    toast(r.error || 'Ошибка', false);
-    return;
+    toast(r.error || 'Ошибка', false); return;
   }
-
   toast('Конфиг применён');
   let html = '';
-
-  if (r.warning) {
-    html += `<div class="a-warn mb-2"><i class="bi bi-exclamation-triangle me-1"></i>${r.warning}</div>`;
-  }
-
+  if (r.warning) html += `<div class="a-warn mb-2"><i class="bi bi-exclamation-triangle me-1"></i>${r.warning}</div>`;
   if (r.junk_params && Object.keys(r.junk_params).length) {
-    const jp = Object.entries(r.junk_params).map(([k,v]) => `<span style="color:var(--accent)">${k}</span>=${v}`).join(' &nbsp;');
-    html += `<div class="junk-box"><span style="color:var(--muted);font-size:10px">ОБФУСКАЦИЯ (рандом)</span><br>${jp}</div>`;
+    const jp = Object.entries(r.junk_params)
+      .map(([k,v]) => `<span style="color:var(--accent)">${k}</span>=${v}`).join('  ');
+    html += `<div class="junk-box"><span style="font-size:10px">🎲 ОБФУСКАЦИЯ</span><br>${jp}</div>`;
   }
-
-  if (!r.is_amnezia) {
-    html += `<div class="a-warn mt-2"><i class="bi bi-shield-exclamation me-1"></i>AmneziaWG не найден — используется WireGuard без obfuscation</div>`;
-  }
-
+  if (!r.is_amnezia) html += `<div class="a-warn mt-2"><i class="bi bi-shield-exclamation me-1"></i>AmneziaWG не найден — используется WireGuard без obfuscation</div>`;
   cont.innerHTML = html;
   wrap.style.display = html ? 'block' : 'none';
 }
 
-// =============================================================================
-// AWG — туннель
-// =============================================================================
+// ── Туннель ──────────────────────────────────────────────────────────────────
 async function tunnelStart() {
   const r = await api('/api/tunnel/start', 'POST');
   toast(r.ok ? 'Туннель поднят' : (r.error || 'Ошибка'), r.ok);
@@ -515,183 +507,192 @@ async function tunnelStop() {
   updateStatus();
 }
 
-// =============================================================================
-// Duck DNS
-// =============================================================================
+// ── Duck DNS ─────────────────────────────────────────────────────────────────
 async function saveDuck() {
-  const token  = $('duck-token').value.trim();
-  const domain = $('duck-domain').value.trim();
+  const token = $('duck-token').value.trim(), domain = $('duck-domain').value.trim();
   if (!token || !domain) { toast('Заполни субдомен и токен', false); return; }
-
   const r = await api('/api/duckdns/config', 'POST', { token, domain });
-  if (r.ok) {
-    toast(`Duck DNS сохранён: ${r.hostname}`);
-    showDuckStatus(r.hostname, true);
-    updateDuck();
-  } else {
-    toast(r.error || 'Ошибка', false);
-  }
+  if (r.ok) { toast(`Duck DNS: ${r.hostname}`); showDuck(r.hostname, true); updateDuck(); }
+  else toast(r.error || 'Ошибка', false);
 }
-
 async function updateDuck() {
   const r = await api('/api/duckdns/update', 'POST');
-  if (r.ok) {
-    toast(`Duck DNS обновлён: ${r.hostname}`);
-    showDuckStatus(r.hostname, true, 'IP обновлён');
-  } else {
-    toast(r.error || 'Ошибка Duck DNS', false);
-  }
+  if (r.ok) { toast(`Duck DNS обновлён: ${r.hostname}`); showDuck(r.hostname, true, 'IP обновлён'); }
+  else toast(r.error || 'Ошибка Duck DNS', false);
   updateStatus();
 }
-
-function showDuckStatus(hostname, ok, extra) {
-  const el = $('duck-status');
-  el.style.display = 'block';
+function showDuck(hostname, ok, extra) {
+  const el = $('duck-status'); el.style.display = 'block';
   el.innerHTML = ok
-    ? `<div class="a-ok"><i class="bi bi-check-circle me-1"></i><b>${hostname}</b>${extra ? ' — ' + extra : ''}</div>`
-    : `<div class="a-warn"><i class="bi bi-exclamation-triangle me-1"></i>${hostname}</div>`;
+    ? `<div class="a-ok"><i class="bi bi-check-circle me-1"></i><b>${hostname}</b>${extra?' — '+extra:''}</div>`
+    : `<div class="a-warn">${hostname}</div>`;
 }
 
-// =============================================================================
-// Прокси
-// =============================================================================
+// ── Прокси ───────────────────────────────────────────────────────────────────
 async function proxyStart() {
   const r = await api('/api/proxy/start', 'POST');
-  toast(r.ok ? `Прокси запущен (PID ${r.pid})` : (r.error || 'Ошибка'), r.ok);
+  toast(r.ok ? `Прокси запущен (PID ${r.pid})` : (r.error||'Ошибка'), r.ok);
   setTimeout(updateStatus, 900);
 }
-async function proxyStop() {
-  await api('/api/proxy/stop', 'POST');
-  toast('Прокси остановлен');
-  updateStatus();
-}
+async function proxyStop()    { await api('/api/proxy/stop','POST'); toast('Остановлен'); updateStatus(); }
 async function proxyRestart() {
-  const r = await api('/api/proxy/restart', 'POST');
-  toast(r.ok ? 'Перезапущен' : (r.error || 'Ошибка'), r.ok);
+  const r = await api('/api/proxy/restart','POST');
+  toast(r.ok ? 'Перезапущен' : (r.error||'Ошибка'), r.ok);
   setTimeout(updateStatus, 900);
 }
-
 async function regenSecret() {
-  const domain = $('proxy-domain').value || null;
-  const port   = parseInt($('proxy-port').value) || 8443;
-  const r = await api('/api/proxy/config', 'POST', { domain, port });
-  toast(r.ok ? 'Секрет пересоздан' : (r.error || 'Ошибка'), r.ok);
+  const domain = $('proxy-domain').value||null, port = parseInt($('proxy-port').value)||8443;
+  const r = await api('/api/proxy/config','POST',{domain,port});
+  toast(r.ok ? 'Секрет пересоздан' : (r.error||'Ошибка'), r.ok);
   updateStatus();
 }
-
 function copyLink() {
   const txt = $('proxy-link').textContent.trim();
-  if (!txt || txt === 'не запущен') { toast('Ссылки нет', false); return; }
-  navigator.clipboard.writeText(txt).then(() => toast('Скопировано'));
+  if (!txt || txt==='не запущен') { toast('Ссылки нет',false); return; }
+  navigator.clipboard.writeText(txt).then(()=>toast('Скопировано'));
 }
 
-// =============================================================================
-// Загрузка доменов
-// =============================================================================
+// ── Загрузка доменов ─────────────────────────────────────────────────────────
 async function loadDomains() {
   const d = await api('/api/proxy/domains');
   const s = $('proxy-domain');
   s.innerHTML = '<option value="">— авто —</option>';
-  (d.domains || []).forEach(v => {
-    const o = document.createElement('option'); o.value = o.textContent = v; s.appendChild(o);
+  (d.domains||[]).forEach(v=>{
+    const o=document.createElement('option'); o.value=o.textContent=v; s.appendChild(o);
   });
 }
 
-// =============================================================================
-// Обновление статуса
-// =============================================================================
+// ── Диагностика ──────────────────────────────────────────────────────────────
+function setDiagRow(iconId, valId, ok, label, detail) {
+  const colors = { true: 'var(--green)', false: 'var(--red)', null: 'var(--yellow)' };
+  const icons  = { true: 'bi-check-circle-fill', false: 'bi-x-circle-fill', null: 'bi-exclamation-circle-fill' };
+  const el = $(iconId);
+  if (el) {
+    el.className = `bi ${icons[String(ok)] || 'bi-dash-circle'}`; 
+    el.style.color = colors[String(ok)] || 'var(--muted)';
+  }
+  const v = $(valId);
+  if (v) v.textContent = detail || label;
+}
+
+async function runDiag() {
+  const btn = $('diag-btn');
+  btn.innerHTML = '<span class="diag-spin"><i class="bi bi-arrow-repeat"></i></span> Проверяю...';
+  btn.disabled = true;
+
+  $('di-tg-val').textContent  = '…';
+  $('di-port-val').textContent = '…';
+  $('diag-issues').style.display = 'none';
+  $('diag-ok').style.display     = 'none';
+
+  try {
+    const d = await api('/api/diag/all');
+
+    // Telegram
+    const tg = d.telegram || {};
+    setDiagRow('di-tg-icon', 'di-tg-val', tg.reachable,
+      'TG', tg.reachable ? `доступен ${tg.results?.find(r=>r.ok)?.ms||'?'}ms` : 'недоступен');
+
+    // Порт
+    const p = d.port || {};
+    const portOk = p.reachable === true ? true : p.reachable === null ? null : false;
+    setDiagRow('di-port-icon', 'di-port-val', portOk,
+      'Порт', p.reachable === true ? 'открыт' : p.reachable === null ? 'локально открыт (роутер?)' : 'закрыт — пробрось порт');
+
+    // Issues
+    if (d.issues && d.issues.length) {
+      $('diag-issues').style.display = 'block';
+      $('diag-issue-list').innerHTML = d.issues.map(i=>`<li>${i}</li>`).join('');
+    } else {
+      $('diag-ok').style.display = 'block';
+    }
+  } catch(e) {
+    toast('Ошибка диагностики: ' + e.message, false);
+  }
+
+  btn.innerHTML = '<i class="bi bi-play-fill me-1"></i>Проверить всё';
+  btn.disabled = false;
+}
+
+// ── Обновление статуса ────────────────────────────────────────────────────────
 function renderAwg(awg) {
   const on = awg.running;
-  $('awg-dot').className = `dot ${on ? 'on' : ''}`;
-  $('awg-bs').className  = `bs ms-auto ${on ? 'on' : 'off'}`;
+  $('awg-dot').className = `dot ${on?'on':''}`;
+  $('awg-bs').className  = `bs ms-auto ${on?'on':'off'}`;
   $('awg-bs').textContent = on ? 'ВКЛ' : 'ВЫКЛ';
-
   const tr = $('awg-traffic');
   if (on) {
     tr.style.display = 'flex';
-    $('awg-rx').textContent = awg.rx_human || '0 B';
-    $('awg-tx').textContent = awg.tx_human || '0 B';
-    $('awg-ep').textContent = awg.endpoint || '—';
-  } else {
-    tr.style.display = 'none';
-  }
+    $('awg-rx').textContent = awg.rx_human||'0 B';
+    $('awg-tx').textContent = awg.tx_human||'0 B';
+    $('awg-ep').textContent = awg.endpoint||'—';
+  } else { tr.style.display = 'none'; }
+
+  setDiagRow('di-awg-icon', 'di-awg-val', on, 'AWG', on ? (awg.is_amnezia?'AmneziaWG':'WireGuard (fallback)') : 'не запущен');
 }
 
-function renderProxy(proxy) {
-  const on = proxy.running;
-  $('proxy-dot').className = `dot ${on ? 'on' : ''}`;
-  $('proxy-bs').className  = `bs ${on ? 'on' : 'off'}`;
+function renderProxy(p) {
+  const on = p.running;
+  $('proxy-dot').className = `dot ${on?'on':''}`;
+  $('proxy-bs').className  = `bs ${on?'on':'off'}`;
   $('proxy-bs').textContent = on ? 'ВКЛ' : 'ВЫКЛ';
-
-  $('proxy-link').textContent = proxy.link || (on ? 'получаем...' : 'не запущен');
-  $('proxy-meta').textContent = on ? `PID: ${proxy.pid}  |  Порт: ${proxy.port}` : '';
-
-  const qr = proxy.qr;
-  if (qr) {
-    $('proxy-qr').src = 'data:image/png;base64,' + qr;
-    $('proxy-qr').style.display = 'block';
-    $('proxy-qr-ph').style.display = 'none';
+  $('proxy-link').textContent = p.link || (on?'получаем...':'не запущен');
+  $('proxy-meta').textContent = on ? `PID: ${p.pid}  |  Порт: ${p.port}  |  TLS: ${p.tls_domain||'?'}` : '';
+  $('di-port-num').textContent = p.port || 8443;
+  if (p.qr) {
+    $('proxy-qr').src = 'data:image/png;base64,'+p.qr;
+    $('proxy-qr').style.display='block'; $('proxy-qr-ph').style.display='none';
   } else {
-    $('proxy-qr').style.display = 'none';
-    $('proxy-qr-ph').style.display = 'block';
+    $('proxy-qr').style.display='none'; $('proxy-qr-ph').style.display='block';
   }
+  setDiagRow('di-proxy-icon', 'di-proxy-val', on, 'Прокси', on?`PID ${p.pid}`:'не запущен');
 }
 
 function renderDuck(duck) {
   if (!duck) return;
-  const configured = duck.configured;
-  $('duck-bs').className   = `bs ms-auto ${configured ? 'on' : 'off'}`;
-  $('duck-bs').textContent = configured ? duck.hostname : 'НЕ НАСТРОЕН';
-  if (configured && duck.hostname) {
-    $('duck-status').style.display = 'block';
-    $('duck-status').innerHTML =
-      `<div class="a-ok"><i class="bi bi-check-circle me-1"></i>${duck.hostname}</div>`;
+  $('duck-bs').className   = `bs ms-auto ${duck.configured?'on':'off'}`;
+  $('duck-bs').textContent = duck.configured ? duck.hostname : 'НЕ НАСТРОЕН';
+  if (duck.configured) {
+    $('duck-status').style.display='block';
+    $('duck-status').innerHTML=`<div class="a-ok"><i class="bi bi-check-circle me-1"></i>${duck.hostname}</div>`;
   }
+  setDiagRow('di-duck-icon', 'di-duck-val', duck.configured,
+    'Duck DNS', duck.configured ? duck.hostname : 'не настроен');
 }
 
 function renderSystem(sys) {
   if (!sys) return;
-  const ram = sys.ram || {};
-  $('t-cpu').textContent  = sys.cpu ?? '—';
-  $('t-ram').textContent  = ram.used || '—';
-  $('t-os').textContent   = (sys.distro || sys.os || '').slice(0, 22);
-  $('sys-os').textContent = sys.distro || sys.os || '—';
-  $('sys-cpu').textContent = sys.cpu ?? '—';
-  $('sys-ru').textContent  = ram.used  || '—';
-  $('sys-rt').textContent  = ram.total || '—';
-  $('sys-up').textContent  = sys.uptime || '—';
+  const ram=sys.ram||{};
+  $('t-cpu').textContent=$('sys-cpu').textContent=sys.cpu??'—';
+  $('t-ram').textContent=ram.used||'—';
+  $('t-os').textContent=(sys.distro||sys.os||'').slice(0,22);
+  $('sys-os').textContent=sys.distro||sys.os||'—';
+  $('sys-ru').textContent=ram.used||'—'; $('sys-rt').textContent=ram.total||'—';
+  $('sys-up').textContent=sys.uptime||'—';
 }
 
 async function updateStatus() {
   try {
     const d = await api('/api/status');
-    renderAwg(d.awg || {});
-    renderProxy(d.proxy || {});
-    renderDuck((d.proxy || {}).duck_dns);
-    renderSystem(d.system || {});
+    renderAwg(d.awg||{});
+    renderProxy(d.proxy||{});
+    renderDuck((d.proxy||{}).duck_dns);
+    renderSystem(d.system||{});
   } catch(e) { console.warn(e); }
 }
 
 async function updateLogs() {
   try {
     const d = await api('/api/proxy/logs');
-    if ((d.lines || []).length) {
-      const b = $('log-box');
-      b.textContent = d.lines.join('\n');
-      b.scrollTop   = b.scrollHeight;
+    if ((d.lines||[]).length) {
+      const b=$('log-box'); b.textContent=d.lines.join('\n'); b.scrollTop=b.scrollHeight;
     }
   } catch(e) {}
 }
 
-// =============================================================================
-// Init
-// =============================================================================
 document.addEventListener('DOMContentLoaded', async () => {
-  await loadDomains();
-  await updateStatus();
-  await updateLogs();
-  setInterval(updateStatus, 3000);
-  setInterval(updateLogs,   3000);
+  await loadDomains(); await updateStatus(); await updateLogs();
+  setInterval(updateStatus, 3000); setInterval(updateLogs, 3000);
 });
 </script>
 </body>

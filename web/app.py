@@ -1,6 +1,5 @@
 """
 app.py — Flask веб-интерфейс.
-Новые эндпоинты: /api/tunnel/import-warp, /api/duckdns/*
 """
 
 import sys
@@ -14,31 +13,20 @@ from flask import Flask, jsonify, request, render_template
 from core import awg_manager, proxy_manager
 from core.status import get_full_status
 
-# Порт прокси — читается из конфига или дефолт
 MTPROTO_PORT = 8443
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(name)s] %(levelname)s: %(message)s"
-)
+logging.basicConfig(level=logging.INFO,
+                    format="%(asctime)s [%(name)s] %(levelname)s: %(message)s")
 logger = logging.getLogger("web")
 
 app = Flask(__name__, template_folder="templates", static_folder="static")
 app.config["JSON_ENSURE_ASCII"] = False
 
 
-# =============================================================================
-# Главная
-# =============================================================================
-
 @app.route("/")
 def index():
     return render_template("index.html")
 
-
-# =============================================================================
-# Статус
-# =============================================================================
 
 @app.route("/api/status")
 def api_status():
@@ -48,9 +36,7 @@ def api_status():
         return jsonify({"error": str(e)}), 500
 
 
-# =============================================================================
-# AmneziaWG — туннель
-# =============================================================================
+# ── Туннель ──────────────────────────────────────────────────────────────────
 
 @app.route("/api/tunnel/start", methods=["POST"])
 def api_tunnel_start():
@@ -70,67 +56,45 @@ def api_tunnel_status():
 def api_tunnel_config_info():
     return jsonify(awg_manager.get_config_info())
 
-
 @app.route("/api/tunnel/config", methods=["POST"])
 def api_tunnel_config():
-    """Ручной ввод параметров AWG."""
     data = request.get_json(force=True, silent=True) or {}
-
-    server_ip     = data.get("server_ip", "").strip()
-    server_pubkey = data.get("server_pubkey", "").strip()
-    # preshared_key — опциональный, None если пустой
-    psk           = data.get("preshared_key", "").strip() or None
-
-    if not server_ip:
+    ip     = data.get("server_ip", "").strip()
+    pubkey = data.get("server_pubkey", "").strip()
+    psk    = data.get("preshared_key", "").strip() or None
+    if not ip:
         return jsonify({"ok": False, "error": "server_ip обязателен"}), 400
-    if not server_pubkey:
+    if not pubkey:
         return jsonify({"ok": False, "error": "server_pubkey обязателен"}), 400
-
     try:
-        server_port = int(data.get("server_port", 51820))
+        port = int(data.get("server_port", 51820))
     except (ValueError, TypeError):
         return jsonify({"ok": False, "error": "server_port должен быть числом"}), 400
-
     try:
-        result = awg_manager.generate_config(
-            server_ip     = server_ip,
-            server_port   = server_port,
-            server_pubkey = server_pubkey,
-            preshared_key = psk,
-            proxy_port    = MTPROTO_PORT,
-        )
-        if server_port == 51820:
-            result["warning"] = "Порт 51820 часто блокируется в РФ. Рекомендуем случайный 49152–65535."
-        return jsonify(result)
+        r = awg_manager.generate_config(
+            server_ip=ip, server_port=port, server_pubkey=pubkey,
+            preshared_key=psk, proxy_port=MTPROTO_PORT)
+        if port == 51820:
+            r["warning"] = "Порт 51820 часто блокируется в РФ. Рекомендуем 49152–65535."
+        return jsonify(r)
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)}), 500
-
 
 @app.route("/api/tunnel/import-warp", methods=["POST"])
 def api_tunnel_import_warp():
-    """
-    Импорт Cloudflare WARP / любого WireGuard конфига.
-    Тело: { "config": "<текст конфига>" }
-    """
-    data   = request.get_json(force=True, silent=True) or {}
-    text   = data.get("config", "").strip()
-
+    data = request.get_json(force=True, silent=True) or {}
+    text = data.get("config", "").strip()
     if not text:
         return jsonify({"ok": False, "error": "Передай поле 'config' с текстом конфига"}), 400
-
     try:
-        result = awg_manager.import_warp_and_generate(text, proxy_port=MTPROTO_PORT)
-        return jsonify(result)
+        return jsonify(awg_manager.import_warp_and_generate(text, proxy_port=MTPROTO_PORT))
     except ValueError as e:
         return jsonify({"ok": False, "error": str(e)}), 400
     except Exception as e:
-        logger.error(f"Ошибка импорта WARP: {e}")
         return jsonify({"ok": False, "error": str(e)}), 500
 
 
-# =============================================================================
-# MTProto прокси
-# =============================================================================
+# ── Прокси ───────────────────────────────────────────────────────────────────
 
 @app.route("/api/proxy/start", methods=["POST"])
 def api_proxy_start():
@@ -174,37 +138,71 @@ def api_proxy_domains():
     return jsonify({"domains": proxy_manager.TLS_DOMAINS})
 
 
-# =============================================================================
-# Duck DNS
-# =============================================================================
+# ── Диагностика ──────────────────────────────────────────────────────────────
+
+@app.route("/api/diag/port")
+def api_diag_port():
+    """Проверяем открыт ли порт прокси снаружи."""
+    return jsonify(proxy_manager.check_port_open(MTPROTO_PORT))
+
+@app.route("/api/diag/telegram")
+def api_diag_telegram():
+    """Проверяем доступны ли сервера Telegram через туннель."""
+    return jsonify(proxy_manager.check_awg_connectivity())
+
+@app.route("/api/diag/all")
+def api_diag_all():
+    """Полная диагностика."""
+    port_check = proxy_manager.check_port_open(MTPROTO_PORT)
+    tg_check   = proxy_manager.check_awg_connectivity()
+    duck       = proxy_manager.load_duck_config()
+    public_ip  = proxy_manager.get_public_hostname()
+    awg_status = awg_manager.get_status()
+
+    issues = []
+    if not awg_status.get("running"):
+        issues.append("AWG туннель не поднят")
+    if not tg_check.get("reachable"):
+        issues.append("Telegram серверы недоступны через туннель")
+    if port_check.get("reachable") is False:
+        issues.append(f"Порт {MTPROTO_PORT} недоступен снаружи — пробрось его на роутере")
+    if not duck:
+        issues.append("Duck DNS не настроен — клиенты будут подключаться по IP")
+    if not awg_status.get("is_amnezia"):
+        issues.append("AmneziaWG не найден — обфускация отсутствует")
+
+    return jsonify({
+        "ok":         len(issues) == 0,
+        "issues":     issues,
+        "public_ip":  public_ip,
+        "port":       port_check,
+        "telegram":   tg_check,
+        "duck_dns":   {"configured": bool(duck), "hostname": duck["hostname"] if duck else None},
+        "awg":        {"running": awg_status.get("running"), "is_amnezia": awg_status.get("is_amnezia")},
+    })
+
+
+# ── Duck DNS ─────────────────────────────────────────────────────────────────
 
 @app.route("/api/duckdns/config", methods=["POST"])
 def api_duck_config():
-    """Сохранить настройки Duck DNS. { token, domain }"""
-    data   = request.get_json(force=True, silent=True) or {}
-    token  = data.get("token", "").strip()
-    domain = data.get("domain", "").strip()
-    r = proxy_manager.save_duck_config(token, domain)
+    data = request.get_json(force=True, silent=True) or {}
+    r = proxy_manager.save_duck_config(
+        data.get("token", "").strip(),
+        data.get("domain", "").strip()
+    )
     return jsonify(r), 200 if r.get("ok") else 400
 
 @app.route("/api/duckdns/update", methods=["POST"])
 def api_duck_update():
-    """Принудительно обновить IP в Duck DNS."""
     r = proxy_manager.update_duck_dns()
     return jsonify(r), 200 if r.get("ok") else 500
 
 @app.route("/api/duckdns/status")
 def api_duck_status():
     cfg = proxy_manager.load_duck_config()
-    return jsonify({
-        "configured": bool(cfg),
-        "hostname":   cfg["hostname"] if cfg else None,
-    })
+    return jsonify({"configured": bool(cfg), "hostname": cfg["hostname"] if cfg else None})
 
-
-# =============================================================================
-# Запуск
-# =============================================================================
 
 def run(host: str = "127.0.0.1", port: int = 8080, debug: bool = False):
     logger.info(f"Веб-интерфейс: http://{host}:{port}")
