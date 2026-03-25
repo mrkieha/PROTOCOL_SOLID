@@ -5,430 +5,416 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>tg-proxy</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Onest:wght@400;500;600&display=swap" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 <style>
   :root {
-    --bg:        #0d1117;
-    --surface:   #161b22;
-    --surface2:  #1c2333;
-    --border:    #30363d;
-    --text:      #e6edf3;
-    --muted:     #7d8590;
-    --accent:    #2f81f7;
-    --accent-h:  #388bfd;
-    --green:     #3fb950;
-    --red:       #f85149;
-    --yellow:    #d29922;
-    --mono:      'JetBrains Mono', monospace;
-    --sans:      'Inter', sans-serif;
+    --bg:       #0d1117;
+    --surface:  #161b22;
+    --surface2: #1c2333;
+    --border:   #30363d;
+    --text:     #e6edf3;
+    --muted:    #7d8590;
+    --accent:   #2f81f7;
+    --green:    #3fb950;
+    --red:      #f85149;
+    --yellow:   #d29922;
+    --orange:   #db6d28;
+    --mono:     'JetBrains Mono', monospace;
+    --sans:     'Onest', sans-serif;
   }
-
   *, *::before, *::after { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 14px;
-    min-height: 100vh;
-  }
-
-  /* ── Шапка ── */
+  /* Topbar */
   .topbar {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 10px 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 9px 18px; display: flex; align-items: center; gap: 10px;
+    position: sticky; top: 0; z-index: 100;
   }
-  .topbar-logo {
-    font-family: var(--mono);
-    font-weight: 600;
-    font-size: 15px;
-    color: var(--accent);
-    letter-spacing: 0.5px;
-  }
-  .topbar-logo span { color: var(--muted); }
-  .topbar-sys {
-    margin-left: auto;
-    display: flex;
-    gap: 18px;
-    font-size: 12px;
-    color: var(--muted);
-    font-family: var(--mono);
-  }
+  .topbar-logo { font-family: var(--mono); font-weight: 600; font-size: 15px; color: var(--accent); }
+  .topbar-logo em { color: var(--muted); font-style: normal; }
+  .topbar-sys { margin-left: auto; display: flex; gap: 16px; font-size: 11px; color: var(--muted); font-family: var(--mono); }
   .topbar-sys b { color: var(--text); }
 
-  /* ── Карточки ── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-  }
-  .card-header {
-    background: var(--surface2);
-    border-bottom: 1px solid var(--border);
-    padding: 10px 16px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--muted);
-    border-radius: 8px 8px 0 0 !important;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .card-body { padding: 16px; }
+  /* Layout */
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } }
+  .col { display: flex; flex-direction: column; gap: 12px; }
 
-  /* ── Статус-индикатор ── */
-  .indicator {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--red);
-    flex-shrink: 0;
+  /* Cards */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+  .card-hd {
+    background: var(--surface2); border-bottom: 1px solid var(--border);
+    padding: 9px 14px; font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .7px; color: var(--muted); border-radius: 8px 8px 0 0;
+    display: flex; align-items: center; gap: 7px;
   }
-  .indicator.on  { background: var(--green); box-shadow: 0 0 6px var(--green); }
-  .indicator.off { background: var(--red); }
+  .card-bd { padding: 14px; }
 
-  /* ── Кнопки ── */
-  .btn { font-size: 13px; font-family: var(--sans); border-radius: 6px; padding: 5px 14px; }
+  /* Tabs inside card */
+  .c-tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); padding: 0 14px; background: var(--surface2); }
+  .c-tab {
+    padding: 8px 14px; font-size: 12px; font-weight: 500; color: var(--muted);
+    cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px;
+    transition: color .15s, border-color .15s; white-space: nowrap;
+  }
+  .c-tab:hover  { color: var(--text); }
+  .c-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .c-pane { display: none; padding: 14px; }
+  .c-pane.active { display: block; }
+
+  /* Indicator */
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--red); flex-shrink: 0; }
+  .dot.on  { background: var(--green); box-shadow: 0 0 6px var(--green); }
+
+  /* Badge */
+  .bs { font-family: var(--mono); font-size: 10px; padding: 2px 7px; border-radius: 4px; }
+  .bs.on  { background: rgba(63,185,80,.13); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
+  .bs.off { background: rgba(248,81,73,.10); color: var(--red);   border: 1px solid rgba(248,81,73,.25); }
+
+  /* Inputs */
+  .form-control, .form-select, textarea.form-control {
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); font-size: 13px; font-family: var(--mono); border-radius: 6px;
+  }
+  .form-control:focus, .form-select:focus, textarea.form-control:focus {
+    background: var(--bg); border-color: var(--accent); color: var(--text);
+    box-shadow: 0 0 0 3px rgba(47,129,247,.15);
+  }
+  .form-label { font-size: 11px; color: var(--muted); margin-bottom: 3px; }
+
+  /* Buttons */
+  .btn { font-size: 13px; border-radius: 6px; padding: 5px 14px; font-family: var(--sans); }
+  .btn-sm { padding: 3px 10px; font-size: 12px; }
   .btn-primary   { background: var(--accent); border-color: var(--accent); }
-  .btn-primary:hover { background: var(--accent-h); border-color: var(--accent-h); }
+  .btn-primary:hover { background: #388bfd; border-color: #388bfd; }
+  .btn-danger    { background: #6e1d1a; border-color: #6e1d1a; color: #fff; }
+  .btn-danger:hover { background: var(--red); border-color: var(--red); }
   .btn-outline-secondary { border-color: var(--border); color: var(--muted); }
   .btn-outline-secondary:hover { border-color: #58a6ff; color: #58a6ff; }
-  .btn-sm { padding: 3px 10px; font-size: 12px; }
-  .btn-danger { background: #6e1d1a; border-color: #6e1d1a; }
-  .btn-danger:hover { background: var(--red); border-color: var(--red); }
+  .btn-success   { background: #196c2e; border-color: #196c2e; }
+  .btn-success:hover { background: var(--green); border-color: var(--green); }
 
-  /* ── Inputs ── */
-  .form-control, .form-select {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-size: 13px;
-    font-family: var(--mono);
-    border-radius: 6px;
-  }
-  .form-control:focus, .form-select:focus {
-    background: var(--bg);
-    border-color: var(--accent);
-    color: var(--text);
-    box-shadow: 0 0 0 3px rgba(47,129,247,0.15);
-  }
-  .form-label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  /* 2-col row */
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .row2-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; }
 
-  /* ── Ссылка прокси ── */
-  .proxy-link-box {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: #58a6ff;
-    word-break: break-all;
-    cursor: text;
-    min-height: 36px;
+  /* Link box */
+  .link-box {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    padding: 9px 12px; font-family: var(--mono); font-size: 12px; color: #58a6ff;
+    word-break: break-all; min-height: 36px;
   }
 
-  /* ── QR ── */
-  .qr-wrap {
-    display: flex;
-    justify-content: center;
-    padding: 10px 0;
-  }
-  .qr-wrap img {
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    max-width: 180px;
-  }
+  /* QR */
+  .qr-wrap { display: flex; justify-content: center; padding: 8px 0; }
+  .qr-wrap img { border-radius: 8px; border: 1px solid var(--border); max-width: 168px; }
+  .qr-ph { color: var(--muted); font-size: 12px; text-align: center; padding: 16px 0; }
 
-  /* ── Лог ── */
+  /* Log */
   .log-box {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    font-family: var(--mono);
-    font-size: 11.5px;
-    color: var(--muted);
-    height: 200px;
-    overflow-y: auto;
-    padding: 10px 12px;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    word-break: break-all;
+    background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+    font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    height: 190px; overflow-y: auto; padding: 9px 12px;
+    line-height: 1.65; white-space: pre-wrap; word-break: break-all;
   }
   .log-box::-webkit-scrollbar { width: 4px; }
   .log-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
-  /* ── Трафик ── */
-  .traffic-row {
-    display: flex;
-    gap: 20px;
-    font-family: var(--mono);
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .traffic-row span b { color: var(--text); }
+  /* Traffic */
+  .traffic { display: flex; gap: 18px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .traffic b { color: var(--text); }
 
-  /* ── Toast ── */
+  /* Alerts */
+  .a-warn  { background: rgba(210,153,34,.1); border: 1px solid rgba(210,153,34,.3); border-radius:6px; padding: 8px 12px; font-size:12px; color: var(--yellow); }
+  .a-ok    { background: rgba(63,185,80,.1);  border: 1px solid rgba(63,185,80,.3);  border-radius:6px; padding: 8px 12px; font-size:12px; color: var(--green); }
+  .a-info  { background: rgba(47,129,247,.1); border: 1px solid rgba(47,129,247,.3); border-radius:6px; padding: 8px 12px; font-size:12px; color: #58a6ff; }
+
+  /* Junk params */
+  .junk-box {
+    background: var(--bg); border: 1px solid var(--border); border-radius:6px;
+    padding: 9px 12px; font-family: var(--mono); font-size: 11px; color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* Duck DNS hostname */
+  .duck-host { font-family: var(--mono); font-size: 13px; color: var(--green); font-weight: 600; }
+
+  /* Toast */
   .toast-container { z-index: 9999; }
-  .toast { font-size: 13px; min-width: 240px; }
-
-  /* ── Badges ── */
-  .badge-status {
-    font-family: var(--mono);
-    font-size: 11px;
-    padding: 3px 8px;
-    border-radius: 4px;
-  }
-  .badge-on  { background: rgba(63,185,80,.15); color: var(--green); border: 1px solid rgba(63,185,80,.3); }
-  .badge-off { background: rgba(248,81,73,.12); color: var(--red);   border: 1px solid rgba(248,81,73,.3); }
-
-  /* ── Предупреждение (AWG fallback) ── */
-  .warn-banner {
-    background: rgba(210,153,34,.1);
-    border: 1px solid rgba(210,153,34,.3);
-    border-radius: 6px;
-    padding: 8px 12px;
-    font-size: 12px;
-    color: var(--yellow);
-    display: none;
-  }
-
-  /* ── Секция настроек AWG ── */
-  .awg-params-info {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 10px 12px;
-    font-family: var(--mono);
-    font-size: 11px;
-    color: var(--muted);
-    display: none;
-  }
-  .awg-params-info.visible { display: block; }
-
-  .section-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  @media (max-width: 768px) { .section-row { grid-template-columns: 1fr; } }
-
-  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 14px; }
-  @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } }
+  .toast { font-size: 13px; min-width: 220px; }
 
   hr { border-color: var(--border); opacity: 1; margin: 12px 0; }
 
-  .copy-btn { cursor: pointer; }
-  .copy-btn:active { transform: scale(0.95); }
+  /* Sys info */
+  .sys-row { font-family: var(--mono); font-size: 12px; color: var(--muted); line-height: 2.1; }
+  .sys-row b { color: var(--text); }
+
+  /* Warn badge on port input */
+  .port-warn { font-size: 10px; color: var(--yellow); margin-left: 4px; }
 </style>
 </head>
 <body>
 
-<!-- ── Шапка ── -->
+<!-- Topbar -->
 <div class="topbar">
-  <i class="bi bi-shield-lock-fill" style="color:var(--accent);font-size:18px"></i>
-  <div class="topbar-logo">tg<span>-</span>proxy</div>
+  <i class="bi bi-shield-lock-fill" style="color:var(--accent);font-size:17px"></i>
+  <span class="topbar-logo">tg<em>-</em>proxy</span>
   <div class="topbar-sys">
-    <span>CPU: <b id="sys-cpu">—</b></span>
-    <span>RAM: <b id="sys-ram">—</b></span>
-    <span>OS: <b id="sys-os">—</b></span>
+    <span>CPU <b id="t-cpu">—</b>%</span>
+    <span>RAM <b id="t-ram">—</b></span>
+    <span><b id="t-os">—</b></span>
   </div>
 </div>
 
-<!-- ── Toast ── -->
+<!-- Toast -->
 <div class="toast-container position-fixed bottom-0 end-0 p-3">
   <div id="toast" class="toast align-items-center border-0" role="alert">
     <div class="d-flex">
-      <div class="toast-body" id="toast-body">OK</div>
-      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+      <div class="toast-body" id="toast-body"></div>
+      <button class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
   </div>
 </div>
 
-<!-- ── Основной макет ── -->
 <div class="layout">
 
-  <!-- ════════════════ ЛЕВАЯ КОЛОНКА ════════════════ -->
-  <div style="display:flex;flex-direction:column;gap:14px">
+  <!-- ═══════ ЛЕВАЯ ═══════ -->
+  <div class="col">
 
-    <!-- ── AmneziaWG: настройки ── -->
+    <!-- Туннель -->
     <div class="card">
-      <div class="card-header">
-        <i class="bi bi-diagram-3"></i> AmneziaWG туннель
+      <div class="card-hd">
+        <i class="bi bi-diagram-3"></i> Туннель
         <span class="ms-auto d-flex align-items-center gap-2">
-          <span id="awg-badge" class="badge-status badge-off">ВЫКЛ</span>
-          <span id="awg-indicator" class="indicator off"></span>
+          <span id="awg-bs" class="bs off">ВЫКЛ</span>
+          <span id="awg-dot" class="dot"></span>
         </span>
       </div>
-      <div class="card-body">
 
-        <div id="awg-warn-banner" class="warn-banner mb-3">
-          <i class="bi bi-exclamation-triangle me-1"></i>
-          <span id="awg-warn-text"></span>
+      <!-- Вкладки -->
+      <div class="c-tabs">
+        <div class="c-tab active" onclick="switchTab('manual')">
+          <i class="bi bi-pencil-square me-1"></i>Вручную
         </div>
+        <div class="c-tab" onclick="switchTab('warp')">
+          <i class="bi bi-cloud-arrow-down me-1"></i>WARP / WG конфиг
+        </div>
+      </div>
 
-        <div class="section-row mb-3">
+      <!-- Ручной ввод -->
+      <div id="pane-manual" class="c-pane active">
+        <div class="row2 mb-3">
           <div>
             <label class="form-label">IP сервера</label>
-            <input id="awg-ip" type="text" class="form-control" placeholder="1.2.3.4">
+            <input id="awg-ip" class="form-control" placeholder="1.2.3.4">
           </div>
           <div>
             <label class="form-label">
-              Порт
-              <span style="color:var(--yellow);font-size:10px" id="port-warn-inline"></span>
+              Порт <span id="port-warn" class="port-warn"></span>
             </label>
             <input id="awg-port" type="number" class="form-control" placeholder="51820" value="51820">
           </div>
         </div>
-
         <div class="mb-3">
           <label class="form-label">Public Key сервера</label>
-          <input id="awg-pubkey" type="text" class="form-control" placeholder="base64==">
+          <input id="awg-pubkey" class="form-control" placeholder="base64==">
         </div>
-
         <div class="mb-3">
-          <label class="form-label">Preshared Key (опционально)</label>
-          <input id="awg-psk" type="text" class="form-control" placeholder="оставь пустым если не нужен">
+          <label class="form-label">Preshared Key <span style="color:var(--muted);font-size:10px">(опционально, оставь пустым)</span></label>
+          <input id="awg-psk" class="form-control" placeholder="— не обязательно —">
         </div>
-
-        <button class="btn btn-primary w-100 mb-2" onclick="applyAwgConfig()">
-          <i class="bi bi-sliders me-1"></i> Сгенерировать и применить конфиг
+        <button class="btn btn-primary w-100" onclick="applyManual()">
+          <i class="bi bi-sliders me-1"></i>Сгенерировать конфиг
         </button>
+      </div>
 
-        <div id="awg-junk-info" class="awg-params-info mt-2"></div>
+      <!-- WARP / WG импорт -->
+      <div id="pane-warp" class="c-pane">
+        <div class="a-info mb-3">
+          <i class="bi bi-info-circle me-1"></i>
+          Вставь сюда <b>полный текст</b> конфига — Cloudflare WARP, обычного WireGuard или AmneziaWG.
+          Ключи и параметры возьмутся автоматически.
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Текст конфига (.conf)</label>
+          <textarea id="warp-text" class="form-control" rows="9"
+            placeholder="[Interface]&#10;PrivateKey = ...&#10;Address = 172.16.0.2/32&#10;&#10;[Peer]&#10;PublicKey = ...&#10;Endpoint = engage.cloudflareclient.com:2408&#10;AllowedIPs = 0.0.0.0/0"></textarea>
+        </div>
+        <button class="btn btn-primary w-100" onclick="importWarp()">
+          <i class="bi bi-cloud-arrow-down me-1"></i>Импортировать и применить
+        </button>
+      </div>
 
-        <hr>
+      <!-- Результат генерации (общий для обоих табов) -->
+      <div id="awg-result" style="display:none;padding:0 14px 14px">
+        <div id="awg-result-content"></div>
+      </div>
 
-        <div class="d-flex gap-2 mb-2">
-          <button class="btn btn-outline-secondary flex-fill" onclick="tunnelStart()">
-            <i class="bi bi-play-fill me-1"></i> Поднять туннель
+      <hr style="margin:0">
+
+      <!-- Управление туннелем -->
+      <div style="padding:14px">
+        <div class="d-flex gap-2 mb-3">
+          <button class="btn btn-success flex-fill" onclick="tunnelStart()">
+            <i class="bi bi-play-fill me-1"></i>Поднять
           </button>
           <button class="btn btn-danger flex-fill" onclick="tunnelStop()">
-            <i class="bi bi-stop-fill me-1"></i> Опустить
+            <i class="bi bi-stop-fill me-1"></i>Опустить
           </button>
         </div>
-
-        <div id="awg-traffic" class="traffic-row mt-2" style="display:none">
+        <div id="awg-traffic" class="traffic" style="display:none">
           <span>↓ <b id="awg-rx">0 B</b></span>
           <span>↑ <b id="awg-tx">0 B</b></span>
-          <span>Endpoint: <b id="awg-endpoint">—</b></span>
+          <span>→ <b id="awg-ep">—</b></span>
         </div>
-
       </div>
     </div>
 
-    <!-- ── Системная информация ── -->
+    <!-- Duck DNS -->
     <div class="card">
-      <div class="card-header"><i class="bi bi-cpu"></i> Система</div>
-      <div class="card-body" style="font-family:var(--mono);font-size:12px;color:var(--muted);line-height:2">
-        <div>ОС: <b id="sys-os-full" style="color:var(--text)">—</b></div>
-        <div>CPU: <b id="sys-cpu-full" style="color:var(--text)">—</b>%</div>
-        <div>RAM: <b id="sys-ram-used" style="color:var(--text)">—</b> / <span id="sys-ram-total">—</span></div>
-        <div>Аптайм: <b id="sys-uptime" style="color:var(--text)">—</b></div>
+      <div class="card-hd">
+        <i class="bi bi-globe2"></i> Duck DNS
+        <span id="duck-bs" class="bs off ms-auto">НЕ НАСТРОЕН</span>
+      </div>
+      <div class="card-bd">
+        <div class="a-info mb-3" style="font-size:11.5px">
+          Бесплатный динамический DNS — не нужно открывать порт 443.
+          Зарегистрируй субдомен на <a href="https://www.duckdns.org" target="_blank" style="color:#58a6ff">duckdns.org</a>
+          и вставь токен + имя субдомена.
+        </div>
+        <div class="row2-3 mb-3">
+          <div>
+            <label class="form-label">Субдомен <span style="color:var(--muted);font-size:10px">(без .duckdns.org)</span></label>
+            <input id="duck-domain" class="form-control" placeholder="myproxy">
+          </div>
+          <div>
+            <!-- пусто, выравнивание -->
+            <label class="form-label" style="visibility:hidden">.</label>
+            <div style="font-size:11px;color:var(--muted);padding-top:6px">.duckdns.org</div>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Токен Duck DNS</label>
+          <input id="duck-token" type="password" class="form-control" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-primary flex-fill" onclick="saveDuck()">
+            <i class="bi bi-floppy me-1"></i>Сохранить
+          </button>
+          <button class="btn btn-outline-secondary" onclick="updateDuck()" title="Обновить IP сейчас">
+            <i class="bi bi-arrow-repeat"></i>
+          </button>
+        </div>
+        <div id="duck-status" class="mt-2" style="display:none"></div>
+      </div>
+    </div>
+
+    <!-- Система -->
+    <div class="card">
+      <div class="card-hd"><i class="bi bi-cpu"></i> Система</div>
+      <div class="card-bd sys-row">
+        <div>ОС: <b id="sys-os">—</b></div>
+        <div>CPU: <b id="sys-cpu">—</b>%</div>
+        <div>RAM: <b id="sys-ru">—</b> / <span id="sys-rt">—</span></div>
+        <div>Аптайм: <b id="sys-up">—</b></div>
       </div>
     </div>
 
   </div>
-  <!-- ════════════════ КОНЕЦ ЛЕВОЙ КОЛОНКИ ════════════════ -->
+  <!-- ═══════ КОНЕЦ ЛЕВОЙ ═══════ -->
 
 
-  <!-- ════════════════ ПРАВАЯ КОЛОНКА ════════════════ -->
-  <div style="display:flex;flex-direction:column;gap:14px">
+  <!-- ═══════ ПРАВАЯ ═══════ -->
+  <div class="col">
 
-    <!-- ── MTProto прокси ── -->
+    <!-- MTProto прокси -->
     <div class="card">
-      <div class="card-header">
+      <div class="card-hd">
         <i class="bi bi-send"></i> MTProto прокси
         <span class="ms-auto d-flex align-items-center gap-2">
-          <span id="proxy-badge" class="badge-status badge-off">ВЫКЛ</span>
-          <span id="proxy-indicator" class="indicator off"></span>
+          <span id="proxy-bs" class="bs off">ВЫКЛ</span>
+          <span id="proxy-dot" class="dot"></span>
         </span>
       </div>
-      <div class="card-body">
+      <div class="card-bd">
 
-        <div class="mb-3">
-          <label class="form-label">TLS-домен маскировки</label>
-          <div class="d-flex gap-2">
-            <select id="proxy-domain" class="form-select">
-              <option value="">— авто (случайный) —</option>
-            </select>
-            <button class="btn btn-outline-secondary btn-sm" onclick="regenSecret()" title="Перегенерировать секрет">
-              <i class="bi bi-arrow-clockwise"></i>
-            </button>
+        <div class="row2 mb-3">
+          <div>
+            <label class="form-label">TLS-домен маскировки</label>
+            <div class="d-flex gap-2">
+              <select id="proxy-domain" class="form-select"></select>
+              <button class="btn btn-outline-secondary btn-sm" onclick="regenSecret()" title="Перегенерировать секрет">
+                <i class="bi bi-arrow-clockwise"></i>
+              </button>
+            </div>
           </div>
-          <div style="font-size:11px;color:var(--muted);margin-top:4px">
-            Трафик замаскируется под HTTPS к выбранному домену
+          <div>
+            <label class="form-label">Порт прокси</label>
+            <input id="proxy-port" type="number" class="form-control" value="8443" min="1024" max="65535">
           </div>
         </div>
 
         <div class="d-flex gap-2 mb-3">
-          <button class="btn btn-primary flex-fill" onclick="proxyStart()">
-            <i class="bi bi-play-fill me-1"></i> Старт
+          <button class="btn btn-success flex-fill" onclick="proxyStart()">
+            <i class="bi bi-play-fill me-1"></i>Старт
           </button>
           <button class="btn btn-outline-secondary" onclick="proxyRestart()">
-            <i class="bi bi-arrow-repeat me-1"></i> Рестарт
+            <i class="bi bi-arrow-repeat"></i>
           </button>
           <button class="btn btn-danger" onclick="proxyStop()">
-            <i class="bi bi-stop-fill me-1"></i> Стоп
+            <i class="bi bi-stop-fill"></i>
           </button>
         </div>
 
         <label class="form-label">Ссылка для Telegram</label>
         <div class="d-flex gap-2 mb-1">
-          <div id="proxy-link" class="proxy-link-box flex-fill">не запущен</div>
-          <button class="btn btn-outline-secondary btn-sm copy-btn" onclick="copyLink()" title="Скопировать">
+          <div id="proxy-link" class="link-box flex-fill">не запущен</div>
+          <button class="btn btn-outline-secondary btn-sm" onclick="copyLink()" title="Скопировать">
             <i class="bi bi-clipboard"></i>
           </button>
         </div>
-
-        <div id="proxy-pid" style="font-size:11px;color:var(--muted);margin-bottom:8px"></div>
+        <div id="proxy-meta" class="mb-2" style="font-size:11px;color:var(--muted)"></div>
 
         <div class="qr-wrap">
           <img id="proxy-qr" src="" alt="" style="display:none">
-          <div id="proxy-qr-placeholder" style="color:var(--muted);font-size:12px;text-align:center;padding:20px 0">
-            <i class="bi bi-qr-code" style="font-size:32px;display:block;margin-bottom:6px"></i>
-            QR появится после старта
+          <div id="proxy-qr-ph" class="qr-ph">
+            <i class="bi bi-qr-code" style="font-size:28px;display:block;margin-bottom:5px"></i>
+            QR появится после запуска
           </div>
         </div>
 
       </div>
     </div>
 
-    <!-- ── Лог ── -->
+    <!-- Лог -->
     <div class="card">
-      <div class="card-header">
-        <i class="bi bi-terminal"></i> Лог mtprotoproxy
-        <button class="btn btn-outline-secondary btn-sm ms-auto" onclick="clearLogView()">очистить вид</button>
+      <div class="card-hd">
+        <i class="bi bi-terminal"></i> Лог прокси
+        <button class="btn btn-outline-secondary btn-sm ms-auto" onclick="$('log-box').textContent=''">очистить вид</button>
       </div>
-      <div class="card-body" style="padding:10px">
+      <div style="padding:10px">
         <div id="log-box" class="log-box">ждём запуска...</div>
       </div>
     </div>
 
   </div>
-  <!-- ════════════════ КОНЕЦ ПРАВОЙ КОЛОНКИ ════════════════ -->
+  <!-- ═══════ КОНЕЦ ПРАВОЙ ═══════ -->
 
-</div>
+</div><!-- /layout -->
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // =============================================================================
 // Утилиты
 // =============================================================================
-
 const $ = id => document.getElementById(id);
 
 function toast(msg, ok = true) {
-  const el   = $('toast');
-  const body = $('toast-body');
-  body.textContent = msg;
+  const el = $('toast');
+  $('toast-body').textContent = msg;
   el.className = `toast align-items-center border-0 text-bg-${ok ? 'success' : 'danger'}`;
   bootstrap.Toast.getOrCreateInstance(el, { delay: 3500 }).show();
 }
@@ -441,235 +427,271 @@ async function api(path, method = 'GET', body = null) {
 }
 
 // =============================================================================
-// Загрузка доменов
+// Вкладки туннеля
 // =============================================================================
-
-async function loadDomains() {
-  const data = await api('/api/proxy/domains');
-  const sel  = $('proxy-domain');
-  (data.domains || []).forEach(d => {
-    const opt = document.createElement('option');
-    opt.value = d; opt.textContent = d;
-    sel.appendChild(opt);
+function switchTab(name) {
+  document.querySelectorAll('.c-tab').forEach((t, i) => {
+    t.classList.toggle('active', (i === 0 && name === 'manual') || (i === 1 && name === 'warp'));
   });
+  $('pane-manual').classList.toggle('active', name === 'manual');
+  $('pane-warp').classList.toggle('active', name === 'warp');
 }
 
 // =============================================================================
-// AWG — конфиг
+// AWG — ручной конфиг
 // =============================================================================
-
-async function applyAwgConfig() {
-  const ip     = $('awg-ip').value.trim();
-  const port   = parseInt($('awg-port').value) || 51820;
-  const pubkey = $('awg-pubkey').value.trim();
-  const psk    = $('awg-psk').value.trim();
-
-  if (!ip || !pubkey) { toast('Заполни IP и Public Key сервера', false); return; }
-
-  const data = await api('/api/tunnel/config', 'POST', {
-    server_ip: ip,
-    server_port: port,
-    server_pubkey: pubkey,
-    preshared_key: psk || null
-  });
-
-  if (data.ok) {
-    toast('Конфиг применён');
-    // Показываем junk-параметры
-    const junk = data.junk_params;
-    const info = $('awg-junk-info');
-    if (junk && Object.keys(junk).length) {
-      info.innerHTML = '🎲 Рандомные параметры обфускации:<br>' +
-        Object.entries(junk).map(([k,v]) => `${k}=${v}`).join('  |  ');
-      info.classList.add('visible');
-    }
-    if (data.warning) {
-      showAwgWarn(data.warning);
-    }
-  } else {
-    toast(data.error || 'Ошибка', false);
-  }
-}
-
-function showAwgWarn(text) {
-  const b = $('awg-warn-banner');
-  $('awg-warn-text').textContent = text;
-  b.style.display = 'block';
-}
-
 $('awg-port').addEventListener('input', function() {
-  const p = parseInt(this.value);
-  const w = $('port-warn-inline');
-  if (p === 51820) {
-    w.textContent = '⚠ может быть заблокирован';
-  } else {
-    w.textContent = '';
-  }
+  $('port-warn').textContent = +this.value === 51820 ? '⚠ блокируется в РФ' : '';
 });
 
-// =============================================================================
-// AWG — управление туннелем
-// =============================================================================
+async function applyManual() {
+  const ip     = $('awg-ip').value.trim();
+  const pubkey = $('awg-pubkey').value.trim();
+  const psk    = $('awg-psk').value.trim() || null;
+  const port   = parseInt($('awg-port').value) || 51820;
 
+  if (!ip || !pubkey) { toast('Заполни IP и Public Key', false); return; }
+
+  const r = await api('/api/tunnel/config', 'POST', {
+    server_ip: ip, server_port: port, server_pubkey: pubkey, preshared_key: psk
+  });
+  showAwgResult(r);
+}
+
+// =============================================================================
+// AWG — импорт WARP/WG
+// =============================================================================
+async function importWarp() {
+  const text = $('warp-text').value.trim();
+  if (!text) { toast('Вставь текст конфига', false); return; }
+
+  const r = await api('/api/tunnel/import-warp', 'POST', { config: text });
+  showAwgResult(r);
+  if (r.ok) toast('Конфиг WARP импортирован и применён');
+}
+
+function showAwgResult(r) {
+  const wrap = $('awg-result');
+  const cont = $('awg-result-content');
+
+  if (!r.ok) {
+    cont.innerHTML = `<div class="a-warn"><i class="bi bi-exclamation-triangle me-1"></i>${r.error || 'Ошибка'}</div>`;
+    wrap.style.display = 'block';
+    toast(r.error || 'Ошибка', false);
+    return;
+  }
+
+  toast('Конфиг применён');
+  let html = '';
+
+  if (r.warning) {
+    html += `<div class="a-warn mb-2"><i class="bi bi-exclamation-triangle me-1"></i>${r.warning}</div>`;
+  }
+
+  if (r.junk_params && Object.keys(r.junk_params).length) {
+    const jp = Object.entries(r.junk_params).map(([k,v]) => `<span style="color:var(--accent)">${k}</span>=${v}`).join(' &nbsp;');
+    html += `<div class="junk-box"><span style="color:var(--muted);font-size:10px">ОБФУСКАЦИЯ (рандом)</span><br>${jp}</div>`;
+  }
+
+  if (!r.is_amnezia) {
+    html += `<div class="a-warn mt-2"><i class="bi bi-shield-exclamation me-1"></i>AmneziaWG не найден — используется WireGuard без obfuscation</div>`;
+  }
+
+  cont.innerHTML = html;
+  wrap.style.display = html ? 'block' : 'none';
+}
+
+// =============================================================================
+// AWG — туннель
+// =============================================================================
 async function tunnelStart() {
-  const data = await api('/api/tunnel/start', 'POST');
-  toast(data.ok ? 'Туннель поднят' : (data.error || 'Ошибка'), data.ok);
+  const r = await api('/api/tunnel/start', 'POST');
+  toast(r.ok ? 'Туннель поднят' : (r.error || 'Ошибка'), r.ok);
   updateStatus();
 }
-
 async function tunnelStop() {
-  const data = await api('/api/tunnel/stop', 'POST');
-  toast(data.ok ? 'Туннель остановлен' : (data.error || 'Ошибка'), data.ok);
+  const r = await api('/api/tunnel/stop', 'POST');
+  toast(r.ok ? 'Туннель остановлен' : (r.error || 'Ошибка'), r.ok);
   updateStatus();
 }
 
 // =============================================================================
-// Прокси — управление
+// Duck DNS
 // =============================================================================
+async function saveDuck() {
+  const token  = $('duck-token').value.trim();
+  const domain = $('duck-domain').value.trim();
+  if (!token || !domain) { toast('Заполни субдомен и токен', false); return; }
 
-async function proxyStart() {
-  const data = await api('/api/proxy/start', 'POST');
-  toast(data.ok ? `Прокси запущен (PID ${data.pid})` : (data.error || 'Ошибка'), data.ok);
-  setTimeout(updateStatus, 800);
+  const r = await api('/api/duckdns/config', 'POST', { token, domain });
+  if (r.ok) {
+    toast(`Duck DNS сохранён: ${r.hostname}`);
+    showDuckStatus(r.hostname, true);
+    updateDuck();
+  } else {
+    toast(r.error || 'Ошибка', false);
+  }
 }
 
+async function updateDuck() {
+  const r = await api('/api/duckdns/update', 'POST');
+  if (r.ok) {
+    toast(`Duck DNS обновлён: ${r.hostname}`);
+    showDuckStatus(r.hostname, true, 'IP обновлён');
+  } else {
+    toast(r.error || 'Ошибка Duck DNS', false);
+  }
+  updateStatus();
+}
+
+function showDuckStatus(hostname, ok, extra) {
+  const el = $('duck-status');
+  el.style.display = 'block';
+  el.innerHTML = ok
+    ? `<div class="a-ok"><i class="bi bi-check-circle me-1"></i><b>${hostname}</b>${extra ? ' — ' + extra : ''}</div>`
+    : `<div class="a-warn"><i class="bi bi-exclamation-triangle me-1"></i>${hostname}</div>`;
+}
+
+// =============================================================================
+// Прокси
+// =============================================================================
+async function proxyStart() {
+  const r = await api('/api/proxy/start', 'POST');
+  toast(r.ok ? `Прокси запущен (PID ${r.pid})` : (r.error || 'Ошибка'), r.ok);
+  setTimeout(updateStatus, 900);
+}
 async function proxyStop() {
-  const data = await api('/api/proxy/stop', 'POST');
+  await api('/api/proxy/stop', 'POST');
   toast('Прокси остановлен');
   updateStatus();
 }
-
 async function proxyRestart() {
-  const data = await api('/api/proxy/restart', 'POST');
-  toast(data.ok ? 'Прокси перезапущен' : (data.error || 'Ошибка'), data.ok);
-  setTimeout(updateStatus, 800);
+  const r = await api('/api/proxy/restart', 'POST');
+  toast(r.ok ? 'Перезапущен' : (r.error || 'Ошибка'), r.ok);
+  setTimeout(updateStatus, 900);
 }
 
 async function regenSecret() {
   const domain = $('proxy-domain').value || null;
-  const data   = await api('/api/proxy/config', 'POST', { domain });
-  toast(data.ok ? 'Секрет пересоздан' : (data.error || 'Ошибка'), data.ok);
+  const port   = parseInt($('proxy-port').value) || 8443;
+  const r = await api('/api/proxy/config', 'POST', { domain, port });
+  toast(r.ok ? 'Секрет пересоздан' : (r.error || 'Ошибка'), r.ok);
   updateStatus();
 }
 
 function copyLink() {
-  const link = $('proxy-link').textContent.trim();
-  if (!link || link === 'не запущен') { toast('Ссылки нет', false); return; }
-  navigator.clipboard.writeText(link).then(() => toast('Ссылка скопирована'));
+  const txt = $('proxy-link').textContent.trim();
+  if (!txt || txt === 'не запущен') { toast('Ссылки нет', false); return; }
+  navigator.clipboard.writeText(txt).then(() => toast('Скопировано'));
 }
 
-function clearLogView() { $('log-box').textContent = ''; }
+// =============================================================================
+// Загрузка доменов
+// =============================================================================
+async function loadDomains() {
+  const d = await api('/api/proxy/domains');
+  const s = $('proxy-domain');
+  s.innerHTML = '<option value="">— авто —</option>';
+  (d.domains || []).forEach(v => {
+    const o = document.createElement('option'); o.value = o.textContent = v; s.appendChild(o);
+  });
+}
 
 // =============================================================================
 // Обновление статуса
 // =============================================================================
-
-function updateAwg(awg) {
+function renderAwg(awg) {
   const on = awg.running;
-  $('awg-indicator').className = `indicator ${on ? 'on' : 'off'}`;
-  $('awg-badge').className     = `badge-status ${on ? 'badge-on' : 'badge-off'}`;
-  $('awg-badge').textContent   = on ? 'ВКЛ' : 'ВЫКЛ';
+  $('awg-dot').className = `dot ${on ? 'on' : ''}`;
+  $('awg-bs').className  = `bs ms-auto ${on ? 'on' : 'off'}`;
+  $('awg-bs').textContent = on ? 'ВКЛ' : 'ВЫКЛ';
 
-  const traffic = $('awg-traffic');
+  const tr = $('awg-traffic');
   if (on) {
-    traffic.style.display = 'flex';
-    $('awg-rx').textContent       = awg.rx_human || '0 B';
-    $('awg-tx').textContent       = awg.tx_human || '0 B';
-    $('awg-endpoint').textContent = awg.endpoint || '—';
+    tr.style.display = 'flex';
+    $('awg-rx').textContent = awg.rx_human || '0 B';
+    $('awg-tx').textContent = awg.tx_human || '0 B';
+    $('awg-ep').textContent = awg.endpoint || '—';
   } else {
-    traffic.style.display = 'none';
-  }
-
-  if (!awg.is_amnezia && awg.awg_bin) {
-    showAwgWarn('AmneziaWG не найден, используется WireGuard (без obfuscation). Трафик может быть обнаружен DPI.');
+    tr.style.display = 'none';
   }
 }
 
-function updateProxy(proxy) {
+function renderProxy(proxy) {
   const on = proxy.running;
-  $('proxy-indicator').className = `indicator ${on ? 'on' : 'off'}`;
-  $('proxy-badge').className     = `badge-status ${on ? 'badge-on' : 'badge-off'}`;
-  $('proxy-badge').textContent   = on ? 'ВКЛ' : 'ВЫКЛ';
+  $('proxy-dot').className = `dot ${on ? 'on' : ''}`;
+  $('proxy-bs').className  = `bs ${on ? 'on' : 'off'}`;
+  $('proxy-bs').textContent = on ? 'ВКЛ' : 'ВЫКЛ';
 
-  const linkEl = $('proxy-link');
-  const qrEl   = $('proxy-qr');
-  const qrPh   = $('proxy-qr-placeholder');
-  const pidEl  = $('proxy-pid');
+  $('proxy-link').textContent = proxy.link || (on ? 'получаем...' : 'не запущен');
+  $('proxy-meta').textContent = on ? `PID: ${proxy.pid}  |  Порт: ${proxy.port}` : '';
 
-  if (proxy.link) {
-    linkEl.textContent = proxy.link;
+  const qr = proxy.qr;
+  if (qr) {
+    $('proxy-qr').src = 'data:image/png;base64,' + qr;
+    $('proxy-qr').style.display = 'block';
+    $('proxy-qr-ph').style.display = 'none';
   } else {
-    linkEl.textContent = on ? 'получаем ссылку...' : 'не запущен';
+    $('proxy-qr').style.display = 'none';
+    $('proxy-qr-ph').style.display = 'block';
   }
-
-  if (proxy.qr) {
-    qrEl.src = 'data:image/png;base64,' + proxy.qr;
-    qrEl.style.display = 'block';
-    qrPh.style.display = 'none';
-  } else {
-    qrEl.style.display = 'none';
-    qrPh.style.display = 'block';
-  }
-
-  pidEl.textContent = on ? `PID: ${proxy.pid} | Порт: ${proxy.port || 443}` : '';
 }
 
-function updateSystem(sys) {
-  if (!sys) return;
-  const cpu  = sys.cpu ?? '—';
-  const ram  = sys.ram || {};
-  const os   = sys.distro || sys.os || '—';
+function renderDuck(duck) {
+  if (!duck) return;
+  const configured = duck.configured;
+  $('duck-bs').className   = `bs ms-auto ${configured ? 'on' : 'off'}`;
+  $('duck-bs').textContent = configured ? duck.hostname : 'НЕ НАСТРОЕН';
+  if (configured && duck.hostname) {
+    $('duck-status').style.display = 'block';
+    $('duck-status').innerHTML =
+      `<div class="a-ok"><i class="bi bi-check-circle me-1"></i>${duck.hostname}</div>`;
+  }
+}
 
-  $('sys-cpu').textContent      = cpu + '%';
-  $('sys-ram').textContent      = ram.used || '—';
-  $('sys-cpu-full').textContent = cpu;
-  $('sys-ram-used').textContent = ram.used   || '—';
-  $('sys-ram-total').textContent= ram.total  || '—';
-  $('sys-uptime').textContent   = sys.uptime || '—';
-  $('sys-os').textContent       = os.length > 20 ? os.slice(0, 20) + '…' : os;
-  $('sys-os-full').textContent  = os;
+function renderSystem(sys) {
+  if (!sys) return;
+  const ram = sys.ram || {};
+  $('t-cpu').textContent  = sys.cpu ?? '—';
+  $('t-ram').textContent  = ram.used || '—';
+  $('t-os').textContent   = (sys.distro || sys.os || '').slice(0, 22);
+  $('sys-os').textContent = sys.distro || sys.os || '—';
+  $('sys-cpu').textContent = sys.cpu ?? '—';
+  $('sys-ru').textContent  = ram.used  || '—';
+  $('sys-rt').textContent  = ram.total || '—';
+  $('sys-up').textContent  = sys.uptime || '—';
 }
 
 async function updateStatus() {
   try {
-    const data = await api('/api/status');
-    updateAwg(data.awg   || {});
-    updateProxy(data.proxy || {});
-    updateSystem(data.system || {});
-  } catch (e) {
-    console.warn('Ошибка получения статуса:', e);
-  }
+    const d = await api('/api/status');
+    renderAwg(d.awg || {});
+    renderProxy(d.proxy || {});
+    renderDuck((d.proxy || {}).duck_dns);
+    renderSystem(d.system || {});
+  } catch(e) { console.warn(e); }
 }
-
-// =============================================================================
-// Обновление логов
-// =============================================================================
 
 async function updateLogs() {
   try {
-    const data  = await api('/api/proxy/logs');
-    const lines = data.lines || [];
-    if (lines.length) {
-      const box = $('log-box');
-      box.textContent = lines.join('\n');
-      box.scrollTop   = box.scrollHeight;
+    const d = await api('/api/proxy/logs');
+    if ((d.lines || []).length) {
+      const b = $('log-box');
+      b.textContent = d.lines.join('\n');
+      b.scrollTop   = b.scrollHeight;
     }
-  } catch (e) {}
+  } catch(e) {}
 }
 
 // =============================================================================
-// Инициализация
+// Init
 // =============================================================================
-
 document.addEventListener('DOMContentLoaded', async () => {
   await loadDomains();
   await updateStatus();
   await updateLogs();
-
-  // Статус каждые 3 секунды
   setInterval(updateStatus, 3000);
-  // Логи каждые 3 секунды
-  setInterval(updateLogs, 3000);
+  setInterval(updateLogs,   3000);
 });
 </script>
 </body>
