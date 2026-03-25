@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT))
 from flask import Flask, jsonify, request, render_template
 from core import awg_manager, proxy_manager
 from core.status import get_full_status
+from core import tunnel_expose
 
 MTPROTO_PORT = 8443
 
@@ -31,7 +32,9 @@ def index():
 @app.route("/api/status")
 def api_status():
     try:
-        return jsonify(get_full_status(port=MTPROTO_PORT))
+        st = get_full_status(port=MTPROTO_PORT)
+        st["bore"] = tunnel_expose.get_status()
+        return jsonify(st)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -138,36 +141,59 @@ def api_proxy_domains():
     return jsonify({"domains": proxy_manager.TLS_DOMAINS})
 
 
+# ── bore (публичный доступ без проброса портов) ───────────────────────────────
+
+@app.route("/api/bore/start", methods=["POST"])
+def api_bore_start():
+    data       = request.get_json(force=True, silent=True) or {}
+    relay      = data.get("relay", "bore.pub").strip() or "bore.pub"
+    relay_ctrl = int(data.get("relay_ctrl", 7835))
+    secret     = data.get("secret", "").strip()
+    local_port = int(data.get("local_port", MTPROTO_PORT))
+    r = tunnel_expose.start(local_port=local_port, relay_host=relay,
+                            relay_ctrl=relay_ctrl, secret=secret)
+    return jsonify(r), 200 if r.get("ok") else 500
+
+@app.route("/api/bore/stop", methods=["POST"])
+def api_bore_stop():
+    return jsonify(tunnel_expose.stop())
+
+@app.route("/api/bore/status")
+def api_bore_status():
+    return jsonify(tunnel_expose.get_status())
+
+@app.route("/api/bore/install", methods=["POST"])
+def api_bore_install():
+    r = tunnel_expose.install_bore()
+    return jsonify(r), 200 if r.get("ok") else 500
+
+
 # ── Диагностика ──────────────────────────────────────────────────────────────
 
 @app.route("/api/diag/port")
 def api_diag_port():
-    """Проверяем открыт ли порт прокси снаружи."""
     return jsonify(proxy_manager.check_port_open(MTPROTO_PORT))
 
 @app.route("/api/diag/telegram")
 def api_diag_telegram():
-    """Проверяем доступны ли сервера Telegram через туннель."""
     return jsonify(proxy_manager.check_awg_connectivity())
 
 @app.route("/api/diag/all")
 def api_diag_all():
-    """Полная диагностика."""
     port_check = proxy_manager.check_port_open(MTPROTO_PORT)
     tg_check   = proxy_manager.check_awg_connectivity()
     duck       = proxy_manager.load_duck_config()
     public_ip  = proxy_manager.get_public_hostname()
     awg_status = awg_manager.get_status()
+    bore_st    = tunnel_expose.get_status()
 
     issues = []
     if not awg_status.get("running"):
         issues.append("AWG туннель не поднят")
     if not tg_check.get("reachable"):
         issues.append("Telegram серверы недоступны через туннель")
-    if port_check.get("reachable") is False:
-        issues.append(f"Порт {MTPROTO_PORT} недоступен снаружи — пробрось его на роутере")
-    if not duck:
-        issues.append("Duck DNS не настроен — клиенты будут подключаться по IP")
+    if not bore_st.get("running") and port_check.get("reachable") is False and not duck:
+        issues.append(f"Порт {MTPROTO_PORT} недоступен снаружи — запусти bore или пробрось порт")
     if not awg_status.get("is_amnezia"):
         issues.append("AmneziaWG не найден — обфускация отсутствует")
 
@@ -179,6 +205,7 @@ def api_diag_all():
         "telegram":   tg_check,
         "duck_dns":   {"configured": bool(duck), "hostname": duck["hostname"] if duck else None},
         "awg":        {"running": awg_status.get("running"), "is_amnezia": awg_status.get("is_amnezia")},
+        "bore":       bore_st,
     })
 
 

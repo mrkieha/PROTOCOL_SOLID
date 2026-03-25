@@ -249,16 +249,81 @@
       </div>
     </div>
 
-    <!-- Duck DNS -->
+    <!-- Публичный доступ (bore + Duck DNS) -->
     <div class="card">
       <div class="card-hd">
-        <i class="bi bi-globe2"></i> Duck DNS
-        <span id="duck-bs" class="bs off ms-auto">НЕ НАСТРОЕН</span>
+        <i class="bi bi-globe2"></i> Публичный доступ
+        <span id="access-bs" class="bs off ms-auto">ВЫКЛ</span>
       </div>
-      <div class="card-bd">
+
+      <div class="c-tabs" id="access-tabs">
+        <div class="c-tab active" onclick="switchAccess('bore')"><i class="bi bi-lightning-charge me-1"></i>bore (без регистрации)</div>
+        <div class="c-tab" onclick="switchAccess('duck')"><i class="bi bi-dns me-1"></i>Duck DNS</div>
+      </div>
+
+      <!-- BORE pane -->
+      <div id="pane-bore" class="c-pane active">
         <div class="a-info mb-3" style="font-size:11.5px">
-          Бесплатный динамический DNS — не нужно открывать порт 443.
-          Зарегистрируй субдомен на <a href="https://www.duckdns.org" target="_blank" style="color:#58a6ff">duckdns.org</a>.
+          <b>bore</b> — бесплатный TCP-туннель без регистрации и проброса портов.
+          Автоматически устанавливается, даёт публичный адрес <code style="color:#58a6ff">bore.pub:ПОРТ</code>.
+          Для РФ работает без VPN.
+        </div>
+
+        <div id="bore-status-box" class="mb-3" style="display:none"></div>
+
+        <!-- Расширенные настройки (скрыты по умолчанию) -->
+        <details class="mb-3">
+          <summary style="font-size:11px;color:var(--muted);cursor:pointer;user-select:none">
+            <i class="bi bi-gear me-1"></i>Расширенные настройки
+          </summary>
+          <div style="padding-top:10px">
+            <div class="row2 mb-2">
+              <div>
+                <label class="form-label">Relay-сервер <span style="color:var(--muted);font-size:10px">(по умолчанию bore.pub)</span></label>
+                <input id="bore-relay" class="form-control" placeholder="bore.pub" value="bore.pub">
+              </div>
+              <div>
+                <label class="form-label">Порт управления</label>
+                <input id="bore-ctrl" type="number" class="form-control" placeholder="7835" value="7835">
+              </div>
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Секрет <span style="color:var(--muted);font-size:10px">(если сервер защищён паролем)</span></label>
+              <input id="bore-secret" class="form-control" placeholder="(не нужен для bore.pub)">
+            </div>
+            <div class="a-warn" style="font-size:11px">
+              <i class="bi bi-info-circle me-1"></i>Если bore.pub недоступен — поднять свой: <code>bore server</code> на любом VPS
+            </div>
+          </div>
+        </details>
+
+        <div class="d-flex gap-2 mb-2">
+          <button class="btn btn-success flex-fill" onclick="boreStart()" id="bore-start-btn">
+            <i class="bi bi-play-fill me-1"></i>Запустить туннель
+          </button>
+          <button class="btn btn-danger" onclick="boreStop()" id="bore-stop-btn">
+            <i class="bi bi-stop-fill"></i>
+          </button>
+        </div>
+
+        <div id="bore-endpoint-box" style="display:none">
+          <label class="form-label">Публичный адрес (для ссылки Telegram)</label>
+          <div class="d-flex gap-2 mb-1">
+            <div id="bore-endpoint" class="link-box flex-fill">—</div>
+            <button class="btn btn-outline-secondary btn-sm" onclick="copyBoreEndpoint()"><i class="bi bi-clipboard"></i></button>
+          </div>
+          <div style="font-size:11px;color:var(--muted)">
+            Используй этот адрес вместо IP в ссылке MTProto
+          </div>
+        </div>
+      </div>
+
+      <!-- DUCK DNS pane -->
+      <div id="pane-duck" class="c-pane">
+        <div class="a-info mb-3" style="font-size:11.5px">
+          Динамический DNS — нужна бесплатная регистрация на
+          <a href="https://www.duckdns.org" target="_blank" style="color:#58a6ff">duckdns.org</a>.
+          Только имя хоста — порт всё равно нужно пробросить или использовать bore.
         </div>
         <div class="row2-3 mb-3">
           <div>
@@ -283,6 +348,7 @@
           </button>
         </div>
         <div id="duck-status" class="mt-2" style="display:none"></div>
+        <span id="duck-bs" style="display:none"></span>
       </div>
     </div>
 
@@ -383,6 +449,11 @@
             <span class="diag-icon"><i class="bi bi-globe2" id="di-duck-icon" style="color:var(--muted)"></i></span>
             <span class="diag-label">Duck DNS</span>
             <span class="diag-val" id="di-duck-val">—</span>
+          </div>
+          <div class="diag-row">
+            <span class="diag-icon"><i class="bi bi-lightning-charge" id="di-bore-icon" style="color:var(--muted)"></i></span>
+            <span class="diag-label">bore туннель</span>
+            <span class="diag-val" id="di-bore-val">—</span>
           </div>
           <div class="diag-row">
             <span class="diag-icon"><i class="bi bi-wifi" id="di-tg-icon" style="color:var(--muted)"></i></span>
@@ -650,14 +721,78 @@ function renderProxy(p) {
 
 function renderDuck(duck) {
   if (!duck) return;
-  $('duck-bs').className   = `bs ms-auto ${duck.configured?'on':'off'}`;
-  $('duck-bs').textContent = duck.configured ? duck.hostname : 'НЕ НАСТРОЕН';
   if (duck.configured) {
     $('duck-status').style.display='block';
     $('duck-status').innerHTML=`<div class="a-ok"><i class="bi bi-check-circle me-1"></i>${duck.hostname}</div>`;
   }
   setDiagRow('di-duck-icon', 'di-duck-val', duck.configured,
     'Duck DNS', duck.configured ? duck.hostname : 'не настроен');
+}
+
+// ── bore ─────────────────────────────────────────────────────────────────────
+function switchAccess(tab) {
+  ['bore','duck'].forEach((t,i) => {
+    document.querySelectorAll('#access-tabs .c-tab')[i].classList.toggle('active', t===tab);
+    $('pane-'+t).classList.toggle('active', t===tab);
+  });
+}
+
+function renderBore(bore) {
+  if (!bore) return;
+  const on = bore.running;
+  const abs = $('access-bs');
+  if (bore.running) {
+    abs.className = 'bs on ms-auto'; abs.textContent = 'bore ВКЛ';
+  } else {
+    abs.className = 'bs off ms-auto'; abs.textContent = 'ВЫКЛ';
+  }
+  const box = $('bore-status-box');
+  const epBox = $('bore-endpoint-box');
+  if (on && bore.endpoint) {
+    box.style.display = 'block';
+    box.innerHTML = `<div class="a-ok"><i class="bi bi-check-circle me-1"></i>Туннель активен → <b>${bore.endpoint}</b></div>`;
+    epBox.style.display = 'block';
+    $('bore-endpoint').textContent = bore.endpoint;
+  } else if (on) {
+    box.style.display = 'block';
+    box.innerHTML = `<div class="a-warn"><i class="bi bi-hourglass-split me-1"></i>Запускается, ждём endpoint...</div>`;
+    epBox.style.display = 'none';
+  } else {
+    box.style.display = 'none';
+    epBox.style.display = 'none';
+  }
+  setDiagRow('di-bore-icon', 'di-bore-val', on,
+    'bore', on ? (bore.endpoint || 'активен') : (bore.installed ? 'остановлен' : 'не установлен'));
+}
+
+async function boreStart() {
+  const relay  = ($('bore-relay').value||'bore.pub').trim();
+  const ctrl   = parseInt($('bore-ctrl').value)||7835;
+  const secret = $('bore-secret').value.trim();
+  const btn    = $('bore-start-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="diag-spin"><i class="bi bi-arrow-repeat"></i></span> Подключаю...';
+  const r = await api('/api/bore/start', 'POST', {relay, relay_ctrl: ctrl, secret, local_port: 8443});
+  btn.disabled = false;
+  btn.innerHTML = '<i class="bi bi-play-fill me-1"></i>Запустить туннель';
+  if (r.ok) {
+    toast(r.endpoint ? `bore запущен: ${r.endpoint}` : 'bore запущен');
+  } else {
+    toast(r.error || 'Ошибка запуска bore', false);
+  }
+  setTimeout(updateStatus, 800);
+}
+
+async function boreStop() {
+  await api('/api/bore/stop', 'POST');
+  toast('bore остановлен');
+  updateStatus();
+}
+
+function copyBoreEndpoint() {
+  const txt = $('bore-endpoint').textContent.trim();
+  if (!txt || txt === '—') { toast('Нет адреса', false); return; }
+  navigator.clipboard.writeText(txt).then(()=>toast('Адрес скопирован'));
 }
 
 function renderSystem(sys) {
@@ -677,6 +812,7 @@ async function updateStatus() {
     renderAwg(d.awg||{});
     renderProxy(d.proxy||{});
     renderDuck((d.proxy||{}).duck_dns);
+    renderBore(d.bore||{});
     renderSystem(d.system||{});
   } catch(e) { console.warn(e); }
 }

@@ -265,6 +265,68 @@ else
 fi
 
 # =============================================================================
+# bore (бесплатный TCP-туннель без регистрации)
+# =============================================================================
+section "bore TCP-туннель"
+
+BORE_BIN="/usr/local/bin/bore"
+
+install_bore() {
+  local ARCH
+  ARCH=$(uname -m)
+  local SUFFIX
+  case "$ARCH" in
+    x86_64|amd64)   SUFFIX="x86_64-unknown-linux-musl" ;;
+    aarch64|arm64)  SUFFIX="aarch64-unknown-linux-musl" ;;
+    armv7l)         SUFFIX="armv7-unknown-linux-musleabihf" ;;
+    *)              SUFFIX="x86_64-unknown-linux-musl" ;;
+  esac
+
+  log "[bore] Запрашиваем последний релиз с GitHub..."
+  local API="https://api.github.com/repos/ekzhang/bore/releases/latest"
+  local URL
+  URL=$(curl -fsSL --connect-timeout 10 "$API" 2>/dev/null \
+    | python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+for a in data.get('assets',[]):
+    nm = a.get('name','')
+    if '${SUFFIX}' in nm and nm.endswith('.tar.gz'):
+        print(a['browser_download_url']); break
+" 2>/dev/null || echo "")
+
+  if [[ -z "$URL" ]]; then
+    warn "[bore] Не удалось получить URL релиза. Установи вручную: https://github.com/ekzhang/bore/releases"
+    return 1
+  fi
+
+  local TMP
+  TMP=$(mktemp -d)
+  log "[bore] Скачиваем: $URL"
+  if curl -fsSL --connect-timeout 30 "$URL" -o "$TMP/bore.tar.gz" 2>&1 | tee -a "$LOG_FILE"; then
+    tar xzf "$TMP/bore.tar.gz" -C "$TMP" 2>/dev/null || true
+    local BIN
+    BIN=$(find "$TMP" -maxdepth 3 -name "bore" -type f | head -1)
+    if [[ -n "$BIN" ]]; then
+      cp "$BIN" "$BORE_BIN"
+      chmod +x "$BORE_BIN"
+      ok "[bore] Установлен: $($BORE_BIN --version 2>/dev/null || echo '?')"
+      rm -rf "$TMP"
+      return 0
+    fi
+  fi
+  rm -rf "$TMP"
+  warn "[bore] Не удалось установить автоматически. Установи вручную: https://github.com/ekzhang/bore/releases"
+  return 1
+}
+
+if "$BORE_BIN" --version &>/dev/null 2>&1; then
+  ok "bore уже установлен: $($BORE_BIN --version 2>/dev/null)"
+else
+  install_bore || true
+fi
+
+# =============================================================================
 # ip_forward
 # =============================================================================
 section "Сетевые параметры"
@@ -367,6 +429,7 @@ echo ""
 printf "  %-20s %s\n" "Python3:"      "$(python3 --version 2>/dev/null || echo 'не найден')"
 printf "  %-20s %s\n" "WireGuard:"    "$(command -v wg &>/dev/null && echo 'установлен' || echo 'не найден')"
 printf "  %-20s %s\n" "AmneziaWG:"    "$(command -v awg &>/dev/null && echo 'установлен' || echo 'fallback (wg)')"
+printf "  %-20s %s\n" "bore:"         "$(command -v bore &>/dev/null && bore --version 2>/dev/null || echo 'не установлен (опционально)')"
 printf "  %-20s %s\n" "mtprotoproxy:" "$MTPROTO"
 printf "  %-20s %s\n" "venv:"         "$VENV"
 echo ""
